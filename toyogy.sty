@@ -1,0 +1,98 @@
+\setlength\intextsep{10.5pt}
+\setlength\textfloatsep{10.5pt}
+\setlength\abovecaptionskip{0pt}
+
+\renewcommand{\lstlistingname}{List}
+\lstset{language=c,
+	basicstyle=\ttfamily\scriptsize,
+	commentstyle=\textit,
+	classoffset=1,
+	keywordstyle=\bfseries,
+	frame=tRBl,
+	framesep=5pt,
+	showstringspaces=false,
+	numbers=left,
+	stepnumber=1,
+	numberstyle=\tiny,
+	tabsize=2
+}
+
+\pagestyle{plain}
+
+\makeatletter
+
+%\def\section{\@startsection {section}{1}{\z@}{0.1ex}{0.1ex}{\large}}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}%
+
+\setlength{\textwidth}{155truemm}
+\setlength{\fullwidth}{\textwidth}
+%\setlength{\textwidth}{\fullwidth}
+\setlength{\oddsidemargin}{15truemm}
+\addtolength{\oddsidemargin}{-1.15truein}
+\setlength{\evensidemargin}{15truemm}
+\addtolength{\evensidemargin}{-1.15truein}
+\setlength{\topmargin}{30truemm}
+% \setlength{\textheight}{197truemm}
+\setlength{\textheight}{230truemm}
+\addtolength{\topmargin}{-2.4truein}
+\addtolength{\footskip}{8truemm}
+
+
+%
+\makeatother
+
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\@makechapterhead}{\vspace*{2\Cvs}}{}{}{}
+\makeatother
+
+\makeatletter
+\def\ps@plainfoot{%
+\let\@mkboth\@gobbletwo
+\let\@oddhead\@empty
+\def\@oddfoot{\normalfont\hfil-- \thepage\ --\hfil}%
+\let\@evenhead\@empty
+\let\@evenfoot\@oddfoot}
+\let\ps@plain\ps@plainfoot
+\makeatother
+\pagestyle{plain}
+
+\makeatletter
+\long\def\@makecaption#1#2{%
+\vskip\abovecaptionskip
+\iftdir\sbox\@tempboxa{#1\hskip1zw#2}%
+\else\sbox\@tempboxa{#1 #2}%
+\fi
+\ifdim \wd\@tempboxa >\hsize
+\iftdir #1\hskip1zw#2\relax\par
+\else #1 #2\relax\par\fi
+\else
+\global \@minipagefalse
+\hbox to\hsize{\hfil\box\@tempboxa\hfil}%
+\fi
+\vskip\belowcaptionskip}
+\makeatother
+
+\makeatletter
+
+\@addtoreset{equation}{section}
+\def\theequation{\thesection.\arabic{equation}}
+\makeatother
+
+\makeatletter
+%\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
+%{0.1ex}%
+%{0.1ex}%
+%{\normalsize}}
+%
+%\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
+%{0.1ex}%
+%{0.1ex}%
+%{\normalsize}}
+\makeatother
+
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\tablename}{Table }
+\setstretch{1.25}
