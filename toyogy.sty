@@ -1,6 +1,6 @@
-\setlength\intextsep{10.5pt}
-\setlength\textfloatsep{10.5pt}
-\setlength\abovecaptionskip{0pt}
+\setlength{\intextsep}{10.5pt}
+\setlength{\textfloatsep}{10.5pt}
+\setlength{\abovecaptionskip}{0pt}
 
 \renewcommand{\lstlistingname}{List}
 \lstset{language=c,
@@ -19,13 +19,10 @@
 
 \pagestyle{plain}
 
-\makeatletter
-
-%\def\section{\@startsection {section}{1}{\z@}{0.1ex}{0.1ex}{\large}}
-
 \setcounter{secnumdepth}{3}
-\setcounter{tocdepth}{2}%
+\setcounter{tocdepth}{2}
 
+% --- 紙領域の設定 ---
 \setlength{\textwidth}{155truemm}
 \setlength{\fullwidth}{\textwidth}
 %\setlength{\textwidth}{\fullwidth}
@@ -34,14 +31,10 @@
 \setlength{\evensidemargin}{15truemm}
 \addtolength{\evensidemargin}{-1.15truein}
 \setlength{\topmargin}{30truemm}
+\addtolength{\topmargin}{-2.4truein}
 % \setlength{\textheight}{197truemm}
 \setlength{\textheight}{230truemm}
-\addtolength{\topmargin}{-2.4truein}
 \addtolength{\footskip}{8truemm}
-
-
-%
-\makeatother
 
 \usepackage{etoolbox}
 \makeatletter
@@ -76,21 +69,8 @@
 \makeatother
 
 \makeatletter
-
 \@addtoreset{equation}{section}
 \def\theequation{\thesection.\arabic{equation}}
-\makeatother
-
-\makeatletter
-%\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
-%{0.1ex}%
-%{0.1ex}%
-%{\normalsize}}
-%
-%\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
-%{0.1ex}%
-%{0.1ex}%
-%{\normalsize}}
 \makeatother
 
 \renewcommand{\figurename}{Fig.}
