@@ -1,7 +1,133 @@
-\section{詳解:とよぎぃ通信}
-とよぎぃ通信はタイプセットに{\TeX}を用いています.
-このタイプセットには\texttt{toyogy.sty}というパッケージが深く関わっています.
-この章ではとよぎぃ通信に使われているパッケージファイル\texttt{toyogy.sty}について,ソースコードを示しながら深く掘り下げることにします.
+\newcommand*{\reflisting}[1]{\lstlistingname\ref{#1}}
+%\newcommand*{\pLaTeX}{p{\LaTeX}}
+\renewcommand*\descriptionlabel[1]{\normalfont\headfont #1 :\hfil}
 
+\chapter{詳解:とよぎぃ通信}
 
-\lstinputlisting[caption = toyogy.sty, label=toyogy-sty, language=TeX]{./toyogy.sty}
+とよぎぃ通信はタイプセットに{\pLaTeX}を用いています.
+しかしながら,とよぎぃ通信のタイプセットに用いられているパッケージファイルは様々な場所から持ってきた便利っぽい設定の集合体になっているために,このままでは秘伝のタレになってしまいます.
+というわけで,本稿ではパッケージファイルを秘伝のタレにしてしまわないために,タイプセットに用いるパッケージファイルを読み解き,可能な限りの解説を試みます.
+
+参考にするとよぎぃ通信のタイプセット設定は第3号で用いたもの\footnote{\url{https://github.com/tut-cc/c90}}です.
+
+\section{クラスそしてプリアンブル}
+
+{\pLaTeX}でのタイプセットに欠かせないものといえば,クラスファイル(\texttt{*.cls})とパッケージファイル(\texttt{*.sty})です.
+一般に,クラスファイルで文書とレイアウトとの対応について定義をして,足りない部分をパッケージファイルで補うという形がとられます.
+パッケージファイルはスタイルファイルとも呼ばれることがありますが,ここではややこしいのでパッケージファイルで統一します.
+
+{\pLaTeX}で文書をタイプセットするときには,文書の先頭にクラスファイルを指定します.
+とよぎぃ通信は同人誌ですから,使うクラスファイルは\texttt{jsclasses}に含まれる書籍用クラスファイル\texttt{jsbook}ということになります.
+\reflisting{lis:class}が第3号を刊行した時に用いたクラスファイルの指定です.
+\begin{lstlisting}[caption=クラスファイルの指定,label=lis:class,language=tex]
+\documentclass[papersize, b5paper, tombo, 11pt]{jsbook}
+\end{lstlisting}
+クラスファイル読み込み時に用いられているオプションの意味はそれぞれ次のような意味を持っています.
+%papersize指定してるのにdvipdfmxで-p a4する理由したら意味がない気がするので調査
+%description環境のアキがたいへんイケてないので後で直す
+\begin{description}
+	\item[papersize] DVI(DeVice Independent)ファイルの先頭にpapersizeスペシャル命令を書き込む
+	\item[b5paper] 用紙サイズをB5に指定
+	\item[tombo] 印刷会社に入稿するときに必要となるトンボの出力
+	\item[11pt] 欧文フォントのサイズを11ptに指定
+\end{description}
+
+クラスファイルの読み込みから文書の開始までの領域がプリアンブルと呼ばれます.
+ここにドキュメントクラスに対する変更等々を書き込むことで,ドキュメントクラスの設定で物足りないちょっとした部分を修正していきます.
+\reflisting{lis:preamble}が第3号を刊行した時に用いたプリアンブルの指定です.
+\begin{lstlisting}[caption=プリアンブル,label=lis:preamble,language=tex]
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{comment}
+\usepackage{url}
+\usepackage{subfigure}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{toyogy}
+\end{lstlisting}
+{\LaTeXe}でタイプセットを行ったことがある人ならば説明不要なものもあると思いますがそれぞれ次のような意味を持っています.
+\begin{description}
+	\item[graphicx] :
+	\item[comment] :
+	\item[url] :
+	\item[subfigure] :
+	\item[setspace] :
+	\item[amsmath] :
+	\item[multirow] :
+	\item[listings] :
+	\item[toyogy] とよぎぃ通信専用の設定が書き込まれたパッケージファイル
+\end{description}
+
+これらの設定でとよぎぃ通信のタイプセットは行われています.というわけでこれで解説終了と言いたいところですが,ひとつだけ中身が全くわからないパッケージファイルがあります.
+\texttt{toyogy.sty}こそがとよぎぃ通信を刊行する上での一番大事なパッケージファイルになのに,このままでは肝心の中身がさっぱりわかりません.
+そこで,次節では\texttt{toyogy.sty}の中身について具体的な解説を施します.
+\section{toyogy.sty}
+
+とよぎぃ通信におけるタイプセットの主役と言ってもいいのが,この\texttt{toyogy.sty}です.
+このパッケージファイルにはとよぎぃ通信を刊行するときに必要となる様々な設定が書き込まれています.これに比べたら今までの説明なんてのはおまけみたいなものです(?).
+これまでと同じように,第3号で用いた設定について解説を施しています.
+また,パッケージファイルの上から解説を試みると大変なことになるため,作用する領域ごとに分割して解説していきます.
+
+\subsection{ページレイアウトの設定}
+
+本を作成する上で基本となるのが,用紙のどの部分にどの要素を割り当てて使うかということです.
+ある本のページを構成する要素は例えば次のように考えられます.
+\begin{itemize}
+	\item 本文
+	\item ページ番号
+	\item 脚注
+	\item 柱
+\end{itemize}
+この時,どの要素も過不足なく本のページ内に収まらなければなりません.
+もし仮に設定を間違えてページ番号がページ内から抜け落ちてしまった！！なんていうことが起きると目も当てられなくなります.
+それを防ぐために,クラスファイルがきちんとページ内に必要な要素が収まるように予めページレイアウトの設定を行っていますが,それが気に食わないということもあります.
+とよぎぃ通信の場合もご多分に漏れずクラスファイルの標準の設定が気に入らないということで,ほんの少しだけページレイアウトを修正しています.
+\begin{lstlisting}[caption = ページレイアウトの修正,label = list:layout,language = tex]
+\setlength{\textwidth}{155truemm}
+\setlength{\fullwidth}{\textwidth}
+\setlength{\oddsidemargin}{15truemm}
+\addtolength{\oddsidemargin}{-1.15truein}
+\setlength{\evensidemargin}{15truemm}
+\addtolength{\evensidemargin}{-1.15truein}
+\setlength{\topmargin}{30truemm}
+\addtolength{\topmargin}{-2.4truein}
+\setlength{\textheight}{230truemm}
+\addtolength{\footskip}{8truemm}
+\end{lstlisting}
+何が何やらという感じなので一つずつ見ていきましょう.
+まずはじめに\\から始まる文字列がそこかしこに現れていますが,これらはマクロと呼ばれるものです.
+{\pLaTeX}では,このようなマクロを記述することで,様々な設定が行えるようになっています\footnote{正確に言えば{\LaTeX}のユーザー定義命令や{\TeX}のcontrol sequenceなどの混在であるが,簡便のためにマクロとしている}.
+
+\clearpage
+
+\section{チェック1}
+
+\begin{equation}
+	x^2 + x + 1 = 0
+\end{equation}
+あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。
+\begin{table}[!ht]
+	\centering
+	\caption{hoge}
+	\label{table:fuga}
+	\begin{tabular}{c|c} \hline \hline
+	1 & 2 \\ \hline
+	\end{tabular}
+\end{table}
+
+\section{チェック2}
+
+\begin{equation}
+	x^3 + x + 1 = 0
+\end{equation}
+あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。
+\setlength{\abovecaptionskip}{10pt}
+\begin{table}[!ht]
+	\centering
+	\caption{hoge}
+	\label{table:fuga}
+	\begin{tabular}{c|c} \hline \hline
+	1 & 2 \\ \hline
+	\end{tabular}
+\end{table}
