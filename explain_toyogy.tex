@@ -1,5 +1,4 @@
 \newcommand*{\reflisting}[1]{\lstlistingname\ref{#1}}
-%\newcommand*{\pLaTeX}{p{\LaTeX}}
 \renewcommand*\descriptionlabel[1]{\normalfont\headfont #1 :\hfil}
 
 \chapter{詳解:とよぎぃ通信}
@@ -18,7 +17,7 @@
 
 {\pLaTeX}で文書をタイプセットするときには,文書の先頭にクラスファイルを指定します.
 とよぎぃ通信は同人誌ですから,使うクラスファイルは\texttt{jsclasses}に含まれる書籍用クラスファイル\texttt{jsbook}ということになります.
-\reflisting{lis:class}が第3号を刊行した時に用いたクラスファイルの指定です.
+\reflisting{lis:class}が実際に用いたクラスファイルの指定です.
 \begin{lstlisting}[caption=クラスファイルの指定,label=lis:class,language=tex]
 \documentclass[papersize, b5paper, tombo, 11pt]{jsbook}
 \end{lstlisting}
@@ -83,6 +82,7 @@
 もし仮に設定を間違えてページ番号がページ内から抜け落ちてしまった！！なんていうことが起きると目も当てられなくなります.
 それを防ぐために,クラスファイルがきちんとページ内に必要な要素が収まるように予めページレイアウトの設定を行っていますが,それが気に食わないということもあります.
 とよぎぃ通信の場合もご多分に漏れずクラスファイルの標準の設定が気に入らないということで,ほんの少しだけページレイアウトを修正しています.
+\reflisting{list:layout}が実際に用いたページレイアウトの修正です.
 \begin{lstlisting}[caption = ページレイアウトの修正,label = list:layout,language = tex]
 \setlength{\textwidth}{155truemm}
 \setlength{\fullwidth}{\textwidth}
@@ -95,39 +95,38 @@
 \setlength{\textheight}{230truemm}
 \addtolength{\footskip}{8truemm}
 \end{lstlisting}
-何が何やらという感じなので一つずつ見ていきましょう.
-まずはじめに\\から始まる文字列がそこかしこに現れていますが,これらはマクロと呼ばれるものです.
+何が何やらという感じなので,一つずつ見ていきましょう.
+まずはじめに\verb|\|から始まる文字列がそこかしこに現れていますが,これらはマクロと呼ばれるものです.
 {\pLaTeX}では,このようなマクロを記述することで,様々な設定が行えるようになっています\footnote{正確に言えば{\LaTeX}のユーザー定義命令や{\TeX}のcontrol sequenceなどの混在であるが,簡便のためにマクロとしている}.
 
-\clearpage
+マクロを用いたページレイアウトの修正を理解するには,はじめに{\pLaTeX}がどのようにページレイアウトを行っているのかを知らねばなりません.
+{\pLaTeX}では,用紙に対して文字を挿入するための領域が四つあり,それぞれ"ヘッダー","フッター","本文","傍注"と言います.\footnote{英語の場合はそれぞれ"header", "footer", "body", "margin note"}.
+この中で最も重要なのが"本文"領域で,ここに文章が挿入されていくことになります.
+"ヘッダー"は日本語書籍の場合"柱"と呼ばれる領域で,書籍によってはここに章番号や章タイトルを挿入して,現在のページがどの章に属しているかを明示します.
+"フッター"にはノンブル,つまりページ番号が主に挿入されます.
+"傍注"は普段あまり見ることはないかもしれませんが,文章の特定箇所に追加で説明を加えたい場合に"本文"領域の欄外に文章を挿入するために使われます.
+それぞれの領域の配置は"本文"領域を中心として,上に"ヘッダー"領域,下に"フッター"領域,ページの小口側に"傍注"領域が配置されることになります.
+%ノド,小口,天,地の説明が必要かどうか
+マクロを用いることでこれらの位置関係を守りながら,所望のページレイアウトを作り出していきます.
 
-\section{チェック1}
+\reflisting{list:layout}での"本文"領域の大きさの設定は次の2行になります
+\begin{verbatim}
+\setlength{\textwidth}{155truemm}
+\setlength{\textheight}{230truemm}
+\end{verbatim}
+本文領域の幅を155mmに,高さを230mmに設定していることが分かります.
+それぞれの単位に対して\texttt{true}がついていますが,これは\texttt{jsbook}でタイプセットを行うときは,まずはじめに欧文書体が10ptの大きさとなるように出力したあとに最後にそれらをクラスファイルのフォント指定に合わせて拡大・縮小するためです.
+もしも\texttt{true}をつけていないと,領域が縦横それぞれ1.1倍されてしまいますが,\texttt{true}をつけることで所望の出力を得ることができます.
 
-\begin{equation}
-	x^2 + x + 1 = 0
-\end{equation}
-あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。
-\begin{table}[!ht]
-	\centering
-	\caption{hoge}
-	\label{table:fuga}
-	\begin{tabular}{c|c} \hline \hline
-	1 & 2 \\ \hline
-	\end{tabular}
-\end{table}
-
-\section{チェック2}
-
-\begin{equation}
-	x^3 + x + 1 = 0
-\end{equation}
-あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。
-\setlength{\abovecaptionskip}{10pt}
-\begin{table}[!ht]
-	\centering
-	\caption{hoge}
-	\label{table:fuga}
-	\begin{tabular}{c|c} \hline \hline
-	1 & 2 \\ \hline
-	\end{tabular}
-\end{table}
+本文領域の大きさが決まったところで,次はどこに配置するのかを決めなければなりません.
+標準では本文領域は印刷するページの左側から1inch + \verb|\|\texttt{hoffset}にマージンを追加したものになります.
+\texttt{jsbook}では奇数ページと偶数ページでレイアウトの設定が異なるため,それぞれのページに対してマージンを設定する必要があります.
+ここで少し問題となるのが,ページの左側からのマージンであるということです.
+というのも,日本語書籍のレイアウトでは天,地,ノド,小口のそれぞれのアキについて指定します.
+ところが{\pLaTeX}を用いる場合は用紙からの左マージンしか指定できないため,偶数ページでは小口のアキが,奇数ページではノドのアキが指定されることになります.
+\begin{verbatim}
+\setlength{\oddsidemargin}{15truemm}
+\addtolength{\oddsidemargin}{-1.15truein}
+\setlength{\evensidemargin}{15truemm}
+\addtolength{\evensidemargin}{-1.15truein}
+\end{verbatim}
