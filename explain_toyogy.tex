@@ -45,18 +45,19 @@
 \usepackage{listings}
 \usepackage{toyogy}
 \end{lstlisting}
-{\LaTeXe}でタイプセットを行ったことがある人ならば説明不要なものもあると思いますがそれぞれ次のような意味を持っています.
-\begin{description}
-	\item[graphicx] :
-	\item[comment] :
-	\item[url] :
-	\item[subfigure] :
-	\item[setspace] :
-	\item[amsmath] :
-	\item[multirow] :
-	\item[listings] :
-	\item[toyogy] とよぎぃ通信専用の設定が書き込まれたパッケージファイル
-\end{description}
+{\LaTeXe}でタイプセットを行ったことがある人ならば説明不要なものでしょう.
+% それぞれ次のような意味を持っています.
+% \begin{description}
+% 	\item[graphicx] :
+% 	\item[comment] :
+% 	\item[url] :
+% 	\item[subfigure] :
+% 	\item[setspace] :
+% 	\item[amsmath] :
+% 	\item[multirow] :
+% 	\item[listings] :
+% 	\item[toyogy] とよぎぃ通信専用の設定が書き込まれたパッケージファイル
+% \end{description}
 
 これらの設定でとよぎぃ通信のタイプセットは行われています.というわけでこれで解説終了と言いたいところですが,ひとつだけ中身が全くわからないパッケージファイルがあります.
 \texttt{toyogy.sty}こそがとよぎぃ通信を刊行する上での一番大事なパッケージファイルになのに,このままでは肝心の中身がさっぱりわかりません.
@@ -130,3 +131,68 @@
 \setlength{\evensidemargin}{15truemm}
 \addtolength{\evensidemargin}{-1.15truein}
 \end{verbatim}
+この設定では奇数ページと偶数ページの左マージンをそれぞれ同一にしています.
+計算してみると奇数ページと偶数ページのノドと小口の幅は次のようになります.
+\begin{description}
+	\item[奇数ページのノド] 11.19mm
+	\item[奇数ページの小口] 15.81mm
+	\item[偶数ページのノド] 15.81mm
+	\item[偶数ページの小口] 11.19mm
+\end{description}
+というわけで,とよぎぃ通信では奇数ページと偶数ページでノドと小口が揃っていないということがよく分かります.
+今までのとよぎぃ通信は,奇数ページの方が綴じ側のアキが狭くなっているはずですが,気づかれた方はいるのでしょうか.
+
+さらにフッター領域にも少しだけ手が加えられています.
+\begin{lstlisting}[caption = "フッター"領域の設定, label = list:footer, language=tex]
+\makeatletter
+\def\ps@plainfoot{%
+\let\@mkboth\@gobbletwo
+\let\@oddhead\@empty
+\def\@oddfoot{\normalfont\hfil-- \thepage\ --\hfil}%
+\let\@evenhead\@empty
+\let\@evenfoot\@oddfoot}
+\let\ps@plain\ps@plainfoot
+\makeatother
+\end{lstlisting}
+"フッター"領域の設定で意味をなしているのは\texttt{\def\@oddfoot{\normalfont\hfil-- \thepage\ --\hfil}}のみになります.
+というのも,それ以外の設定は\texttt{jsbook}によって指定されているものと寸分違わぬものとなっているためです.
+抜き出した設定で行っているのはページ番号をフッターの中央揃えにして,ページ番号の両端にエンダッシュを追加する設定となっています.ただそれだけです.
+
+\subsection{図や表の挿入についての設定}
+
+{\pLaTeX}では図や表はフロートと呼ばれる領域を"本文"領域内部に作成した上で,フロート内に配置されます.
+\begin{lstlisting}[caption = フロートまわりの設定, label = list:float, language = tex]
+\setlength{\intextsep}{10.5pt}
+\setlength{\textfloatsep}{10.5pt}
+
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\tablename}{Table }
+
+\makeatletter
+\setlength{\abovecaptionskip}{0pt}
+\long\def\@makecaption#1#2{%
+\vskip\abovecaptionskip
+\iftdir\sbox\@tempboxa{#1\hskip1zw#2}%
+\else\sbox\@tempboxa{#1 #2}%
+\fi
+\ifdim \wd\@tempboxa >\hsize
+\iftdir #1\hskip1zw#2\relax\par
+\else #1 #2\relax\par\fi
+\else
+\global \@minipagefalse
+\hbox to\hsize{\hfil\box\@tempboxa\hfil}%
+\fi
+\vskip\belowcaptionskip}
+\makeatother
+\end{lstlisting}
+はじめに登場する\verb|\setlength|で示された設定について見ていきます.これらは,フロートの前後のアキについて指定を行います.
+\verb|\intextsep|は文中にフロートを挿入した時に,本文と図の間に生じるアキを決定している\footnote{\texttt{float.sty}の\texttt{float@endH}が詳しい}.
+文中に挿入された際に,フロートの上下に対して指定されたアキを挿入する.
+
+\subsection{数式についての設定}
+\begin{lstlisting}[caption = 数式まわりの設定, label = list:eq, language = tex]
+\makeatletter
+\@addtoreset{equation}{section}
+\def\theequation{\thesection.\arabic{equation}}
+\makeatother
+\end{lstlisting}
