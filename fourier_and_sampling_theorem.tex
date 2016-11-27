@@ -1,0 +1,246 @@
+% \twocolumn
+
+\chapter{フーリエ変換たちとサンプリング定理}
+
+\section{はじめに}
+
+けーさん(\verb|@k3kaimu|)です．
+皆さんはフーリエ変換って知ってますか？
+高専や大学の低学年で習う数学の積分変換の一つです．
+フーリエ変換の仲間として，フーリエ級数展開だったり，離散時間フーリエ変換，離散フーリエ変換があります．
+2016年度現在，私は無線通信系の研究室で修士課程1年として，信号処理に関しての研究を行っています．
+恥ずかしいことに，実は最近までフーリエ変換たちの関連性について，全くといっていいほど無知でした．
+また，これらの変換や級数展開について，それぞれを関連付けて説明している工学向けの文献をあまり知らないので，
+ちょうどいい機会として，部誌のスペースをお借りして，フーリエ変換たちとサンプリング定理について，体系的に説明したいと思います．
+ただし，僕は工学の人間ですので，数学科の人のような厳密性は達成できないかもしれませんが，大目に見てください．
+また，この記事では，フーリエ変換たちの導出には手を出さず，ただフーリエ変換たちが互いにどのような関係にあるのかのみに焦点を当てて説明します．
+なので，大学でフーリエ変換たちを学んだけど，それらの関連性についていまいち理解できてない人向けの記事になってます．
+ものすごくニッチですね．
+
+\section{フーリエ変換たち}
+
+まずはじめに，本章では本記事で取り上げるフーリエ変換たちの公式を示しておきます．
+第1節でも説明したように，本記事ではこれらの式を導出せずに当然のように使用していきます．
+導出等は他の文献を参考にしてください．
+
+\subsection{フーリエ変換}
+
+フーリエ変換とは，時間信号$x(t)$をその周波数領域表現$X(f)$へ変換するものです．
+数学的には，時間や周波数という概念は必要ではなく，変換後の次元は元の次元の逆数になります．
+つまり，位置に関数関数をフーリエ変換すると，位置の逆数を次元として持つ関数に変換されます．
+時間信号$x(t)$に対して周波数領域表現$X(f)$はスペクトル(Spectrum)と呼ばれます．
+フーリエ変換可能な関数の制約はいくつかありますが，この記事では省きます．
+\begin{align}
+X(f) &= \int_{-\infty}^{\infty} x(t) e^{-i2\pi f t} dt \\
+x(t) &= \int_{-\infty}^{\infty} X(f) e^{i2\pi ft} df
+\end{align}
+
+\subsection{フーリエ級数展開}
+
+周期関数をフーリエ級数展開すると，スペクトルが離散的になります．
+このことから，周期関数のスペクトルは離散スペクトルだったり線スペクトルと呼ばれます．
+周期的信号に対してフーリエ変換を適用した場合に得られるものがフーリエ級数展開です．
+周期関数をフーリエ級数展開することで，元の関数を無限個の$\sin$, $\cos$や複素正弦波の和で表すことができます．
+本記事では，フーリエ級数展開の各係数とフーリエ変換結果がどのような関係にあるのかに焦点を当てて説明します．
+
+\subsubsection{複素型フーリエ級数展開}
+
+周期的な複素信号を，無限個の複素正弦波で表すように展開することを複素型フーリエ級数展開といいます．
+式(\ref{eq:複素型フーリエ級数展開の係数})では，積分範囲が$0$から周期$T$までになっていますが，この範囲はちゃんと周期$T$分あれば$-\frac{T}{2}$から$\frac{T}{2}$でも大丈夫です．
+\begin{align}
+c_n &= \frac{1}{T} \int_{0}^{T} x(t) e^{-i2\pi n \frac{t}{T}} dt \label{eq:複素型フーリエ級数展開の係数}\\
+x(t) &= \sum_{n=-\infty}^{\infty} c_n e^{i2\pi n \frac{t}{T}}
+\end{align}
+
+
+\subsubsection{実型フーリエ級数展開}
+
+信号$x(t)$が，周期信号かつ実数信号のとき，複素型フーリエ級数展開は実型フーリエ級数展開となります．
+工学的応用上では，複素型フーリエ級数展開は実型フーリエ級数展開を内包していますので，複素型フーリエ級数展開で十分です．
+この記事でも，複素型フーリエ級数展開にのみ焦点を当てて説明をします．
+\begin{align}
+a_n &= \frac{2}{T} \int_0^T x(t) \cos {2\pi n \frac{t}{T}} \\
+b_n &= \frac{2}{T} \int_0^T x(t) \sin {2\pi n \frac{t}{T}} \\
+x(t) &= \frac{a_0}{2} + \sum_{n=1}^{\infty}\left(a_n \cos {2\pi n \frac{t}{T}} + b_n \sin {2\pi n \frac{t}{T}} \right)
+\end{align}
+
+
+\subsection{離散時間フーリエ変換}
+
+信号が離散時間信号のとき，フーリエ変換は離散時間フーリエ変換になります．
+離散時間信号とは，連続時間信号をA/D (Analog/Digital)変換器などで変換した後の信号です．
+何度も書きますが，この記事では，フーリエ変換と離散時間フーリエ変換のスペクトルの比較に焦点を当てます．
+また，これを通して標本化定理の証明をします．
+\begin{align}
+X(f) &= \sum_{n=-\infty}^{\infty} x[n] e^{-i 2 \pi fnT_s} \\
+x[n] &= \int_{-\frac{1}{2}}^{\frac{1}{2}} X(f)e^{i2\pi fnT_s} df
+\end{align}
+
+
+\subsection{離散フーリエ変換}
+
+離散時間信号かつ周期的信号のとき，フーリエ変換は離散フーリエ変換になります．
+フーリエ級数展開のときと同様に，周期的離散時間信号のスペクトルは離散スペクトルとなります．
+\begin{align}
+X[k] &= \sum_{n=0}^{N-1} x[n] e^{-i \frac{2\pi}{N} kn} \\
+x[n] &= \frac{1}{N} \sum_{k=0}^{N-1} F[k] e^{i \frac{2\pi}{N} kn}
+\end{align}
+
+
+\section{フーリエ変換とフーリエ級数展開}
+
+フーリエ級数展開は「$x(t)$がある周期$T$で周期的信号である」場合に使えるものでした．
+ここでは，周期$T$を持つ周期信号をフーリエ変換してみて，その結果とフーリエ級数展開がどのような結びつきにあるのかを考えてみます．
+ここで，周期$T$を持つ周期信号とは，$x(t - T) = x(t)$が成立するような信号です．
+この信号$x(t)$のスペクトルと，$x(t - T)$スペクトルは等しいはずです．
+では，実際に式展開してみましょう．
+\begin{align}
+\mathcal{F}[x(t-T)]     &= \int_{-\infty}^{\infty} x(t-T) e^{-i2\pi f t} dt\\
+                        &= \int_{-\infty}^{\infty} x(t) e^{-i2\pi f(t + T)} dt \\
+                        &= \left(\int_{-\infty}^{\infty} x(t) e^{-i2\pi ft} dt \right) e^{-i2\pi fT} \\
+                        &= \mathcal{F}[x(t)] e^{-i2\pi fT}
+\end{align}
+あれ？
+式展開した結果，単純に$\mathcal{F}[x(t)] = \mathcal{F}[x(t-T)]$とはならなさそうです．
+問題は，$e^{-i2\pi fT}$という項ですね．
+この項が$1$であれば，つまり$fT$が整数のとき，つまりある整数$n$に対して$f=\frac{n}{T}$では両辺は一致します．
+ではそれ以外の場合ではどうでしょうか．
+これは，$\mathcal{F}[x(t)]=0$しかありえません．
+したがって，周期$T$を持つ周期信号のスペクトルは，$n$を整数として$f=\frac{n}{T}$でのみ値を持ち，それ以外では$0$となります．
+これは，フーリエ級数展開とも一致しますね．
+
+では，もう少し違う方法で，周期関数$x(t)$のフーリエ変換を考えてみたいと思います．
+$x(t)$が次のように，区間$T$のみ値を持つ無限個の信号の和で表すことができるとしましょう．
+\begin{align}
+x(t) &= \sum_{n=-\infty}^{\infty} x_T(t - nT) \\
+x_T(t) &=   \begin{cases}
+                0    & (t < 0) \\
+                x(t) & (0 \leq t < T) \\
+                0    & (T \leq t)
+            \end{cases}
+\end{align}
+このように表現したとき，$x(t)$のフーリエ変換は次のようになります．
+\begin{align}
+\mathcal{F}[x(t)]   &= \int_{-\infty}^{\infty} \sum_{n=-\infty}^{\infty} x_T(t - nT) e^{-i2\pi f t} dt\\
+                    &= \sum_{n=-\infty}^{\infty} \int_{-\infty}^{\infty} x_T(t - nT) e^{-i2\pi f t} dt
+\end{align}
+ここで，$t'=t-nT$と置換したのちに，$t'=t$と置き換えれば，
+\begin{align}
+\mathcal{F}[x(t)]   &= \sum_{n=-\infty}^{\infty} \int_{-\infty}^{\infty} x_T(t) e^{-i2\pi f (t+nT)} dt \\
+                    &= \sum_{n=-\infty}^{\infty} \left( \int_{-\infty}^{\infty} x_T(t) e^{-i2\pi f t} dt \right) e^{-i2 \pi f nT} \\
+                    &= \sum_{n=-\infty}^{\infty} \mathcal{F}[x_T(t)] e^{-i2 \pi f nT} \\
+                    &= \mathcal{F}[x_T(t)] \sum_{n=-\infty}^{\infty}  e^{-i2 \pi f nT}
+\end{align}
+を得ます．
+$\mathcal{F}[x(t)]$のフーリエ変換結果が$f=\frac{n}{T}$でのみ値を持つことから，$\mathcal{F}[x_T(t)]$かその後ろの$\sum e^{-i2 \pi f nT}$のどちらかが，$f=\frac{n}{T}$でのみ値を持ちそうです．
+少し考えればわかりますが，$\mathcal{F}[x_T(t)]$はすべての周波数成分の値を持ち得るので，結局$\sum e^{-i2 \pi f nT}$の部分が$f=\frac{n}{T}$でのみ値を持つことがわかります．
+実は，$\sum e^{-i2 \pi f nT}$の部分は，櫛型関数と呼ばれる関数と等しくなります．
+\begin{align}
+\sum_{n=-\infty}^{\infty}  e^{-i2 \pi f nT} &= \frac{1}{T} \sum_{n=-\infty}^{\infty} \delta\left(f - \frac{n}{T}\right) \label{eq:comb_function}
+\end{align}
+ここで，$\delta(t)$はデルタ関数と呼ばれ，任意の関数$g(t)$に対して次のような性質を満たす関数です．
+\begin{align}
+\int_{-\infty}^{\infty} \delta(t) g(t) dt = g(0) \label{eq:delta}
+\end{align}
+式(\ref{eq:comb_function})が成り立つかどうかを確認するには，櫛型関数が周期関数であることを利用して，櫛型関数のフーリエ級数展開を行うことで確認できます．
+周波数領域であることに注意して，櫛型関数を複素フーリエ級数展開したときの係数$c_{comb, n}$を計算すると，
+\begin{align}
+c_{comb, n} &= T \int_{-\frac{1}{2T}}^{\frac{1}{2T}} \left( \frac{1}{T} \sum_{m=-\infty}^{\infty} \delta\left(f - \frac{m}{T}\right) \right) e^{-i 2\pi n f T} df \\
+    &= \int_{-\frac{1}{2T}}^{\frac{1}{2T}} \delta(f) e^{-i 2\pi n f T} df \\
+    &= 1
+\end{align}
+となり，結局
+\begin{align}
+\frac{1}{T} \sum_{n=-\infty}^{\infty} \delta\left(f - \frac{n}{T}\right) = \sum_{n=-\infty}^{\infty}  e^{i2 \pi f nT} = \sum_{n=-\infty}^{\infty}  e^{-i2 \pi f nT}
+\end{align}
+になることが示されました．
+ですので，
+\begin{align}
+\mathcal{F}[x(t)] = \frac{1}{T} \mathcal{F}[x_T(t)] \sum_{n=-\infty}^{\infty} \delta\left(f - \frac{n}{T}\right)
+\end{align}
+が成立します．
+さらに，
+\begin{align}
+\mathcal{F}[x_T(t)] &= \int_{-\infty}^{\infty} x_T(t) e^{-i2\pi ft} dt \\
+    &= \int_{0}^{T} x(t) e^{-i2\pi ft} dt
+\end{align}
+ですから，
+\begin{align}
+\mathcal{F}[x(t)] &= \frac{1}{T} \left(\int_{0}^{T} x(t) e^{-i2\pi ft} dt\right) \sum_{n=-\infty}^{\infty} \delta\left(f - \frac{n}{T}\right)
+\end{align}
+となります．
+おお，フーリエ級数展開の形が見えてきましたね．
+$x(t)$を複素フーリエ級数展開したときの係数を$c_{x,n}$とすれば，
+\begin{align}
+\mathcal{F}[x(t)] &= \sum_{n=-\infty}^{\infty} \left(\int_0^T x(t) e^{-i2\pi \frac{n}{T} t} dt \right) \delta\left(f - \frac{n}{T}\right) \\
+                  &= \sum_{n=-\infty}^{\infty} c_{x,n} \delta\left(f - \frac{n}{T}\right)
+\end{align}
+となります！！
+
+以上より，以下の3つのことがいえます．
+\begin{itemize}
+\item 1周期分のスペクトル$\mathcal{F}[x_T(t)]$がわかっていれば，それに櫛型関数をかけることで周期的信号$x(t)$のスペクトルが計算できる．
+\item 複素フーリエ係数とは，周期的信号$x(t)$のスペクトルにおけるデルタ関数列の係数である．
+\item 複素フーリエ級数展開時の係数$c_{x,n}$とデルタ関数$\delta(t-n/T)$の積の無限個の和はフーリエ変換で導いたスペクトルに一致する．
+\end{itemize}
+
+
+\section{フーリエ変換と離散時間フーリエ変換}
+
+この節では、連続時間関数から離散時間関数のフーリエ変換を用いて、離散時間フーリ変換の導出を行ってみます．
+連続時間関数から離散時間関数への変換として，先ほど使った櫛形関数を使います．
+この記事では，連続時間関数$x(t)$に対して離散時間関数を表す記号として$x^D(t)$を使用します．
+サンプリング周波数$f_s=\frac{1}{T_s}$でサンプリングする操作を$S_{f_s}$という演算子で定義すると，
+\begin{align}
+x^D(t) = S_{f_s}[x(t)] = x(t) \left(T_s \sum_{n=-\infty}^{\infty} \delta\left(t- nT_s\right) \right)
+\end{align}
+では，離散時間関数$x^D(t)$のフーリエ変換を計算すると，
+\begin{align}
+\mathcal{F}[x^D(t)] &= \int_{-\infty}^{\infty} x^D(t) e^{-i2\pi ft} dt\\
+    &= \int_{-\infty}^{\infty} x(t) \left(T_s \sum_{n=-\infty}^{\infty} \delta\left(t- nT_s\right) \right) e^{-i2\pi ft} dt \\
+    &= T_s \sum_{n=-\infty}^{\infty} \int_{-\infty}^{\infty} x(t) \delta\left(t- nT_s\right) e^{-i2\pi ft} dt \\
+    &= T_s \sum_{n=-\infty}^{\infty} x\left(nT_s\right) e^{-i2\pi fnT_s}
+\end{align}
+おお，これまた面白い結果が出てきました．
+つまり，$x[n]=T_s x(nT_s)$と定義すれば，櫛形関数を用いて離散化した関数をフーリエ変換した結果は離散時間フーリエ変換と等価になります．
+
+では，最後にフーリエ変換で得られるスペクトルとサンプリングした信号の離散時間フーリエ変換で得られるスペクトルの間の関係性を導出してみましょう．
+ここで，元の連続時間信号のスペクトルを次のように定義します．
+\begin{align}
+X(f) &= \mathcal{F}[x(t)] = \sum_{n=-\infty}^{\infty} X_n(f - nf_s) \\
+X_n(f) &=   \begin{cases}
+                0           & (f < -\frac{f_s}{2}) \\
+                X(f + nf_s) & (-\frac{f_s}{2} \leq f < \frac{f_s}{2}) \\
+                0           & (f > \frac{f_s}{2})
+            \end{cases}
+\end{align}
+また，時間次元の信号は，
+\begin{align}
+x(t) &= \sum_{n=-\infty}^{\infty} x_n(t) e^{i2\pi nf_s t} \\
+x_n(t) &=   \mathcal{F}^{-1}[X_n(f)]
+\end{align}
+となります．
+$x_n(t)$のことを，$nf_s$を中心周波数としたベースバンド信号と呼びます．
+すると，サンプリング後の信号のフーリエ変換は，
+\begin{align}
+\mathcal{F}[S_{f_s}[x(t)]] &= \sum_{n=-\infty}^{\infty} \left(T_s \sum_{m=-\infty}^{\infty} x_m(nT_s) e^{i2\pi mf_s n T_s} \right) e^{-i2\pi fnT_s} \\
+    &= \sum_{n=-\infty}^{\infty} \left(T_s \sum_{m=-\infty}^{\infty} x_m(nT_s) \right) e^{-i2\pi fnT_s} \\
+    &= \sum_{m=-\infty}^{\infty} \sum_{n=-\infty}^{\infty} T_s x_m(nT_s) e^{-i2\pi fnT_s} \\
+    &= \sum_{m=-\infty}^{\infty} \mathcal{F}[S_{f_s}[x_m(t)]]
+\end{align}
+となりました．
+同様の導出を$x(t)=x_m(t)e^{i2\pi nf_s t}$とすることで，帯域制限された信号$x_m(t)e^{i2\pi nf_s t}$のスペクトルを計算することができます．
+\begin{align}
+\mathcal{F}[S_{f_s}[x_m(t)e^{i2\pi nf_s t}]] &= \mathcal{F}[S_{f_s}[x_m(t)]] \\
+    &= \mathcal{F}\left[x_m(t) \left(T_s \sum_{n=-\infty}^{\infty} \delta(t - nT_s) \right) \right] \\
+    &= \mathcal{F}\left[x_m \sum_{n=-\infty}^{\infty} e^{i2\pi n f_s t} \right] \\
+    &= \sum_{n=-\infty}^{\infty} X_m(f - nf_s)
+\end{align}
+したがって，帯域制限された信号を時間的に離散化したのであれば，その信号をフーリエ変換した結果を$f_s$ごとにコピーした結果がフーリエ変換結果となります．
+ですので，結局は
+\begin{align}
+\mathcal{F}[S_{f_s}[x(t)]] = \sum_{n=-\infty}^{\infty} \sum_{m=-\infty}^{\infty} X_m(f - nf_s)
+\end{align}
+となり，元のスペクトル$X(f)$を$f_s$ごとにぶつ切りにして，すべての和をとったものが，全周波数帯域にコピーされます．
+
+% \onecolumn
