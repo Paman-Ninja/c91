@@ -95,9 +95,9 @@ x[n] &= \frac{1}{N} \sum_{k=0}^{N-1} F[k] e^{i \frac{2\pi}{N} kn}
 この信号$x(t)$のスペクトルと，$x(t - T)$スペクトルは等しいはずです．
 では，実際に式展開してみましょう．
 \begin{align}
-\mathcal{F}[x(t-T)]     &= \int_{-\infty}^{\infty} x(t-T) e^{-i2\pi f t} dt\\
-                        &= \int_{-\infty}^{\infty} x(t) e^{-i2\pi f(t + T)} dt \\
-                        &= \left(\int_{-\infty}^{\infty} x(t) e^{-i2\pi ft} dt \right) e^{-i2\pi fT} \\
+\mathcal{F}[x(t-T)]     &= \int_{-\infty}^{\infty} x(t-T) e^{-i2\pi f t} dt \nonumber\\
+                        &= \int_{-\infty}^{\infty} x(t) e^{-i2\pi f(t + T)} dt  \nonumber\\
+                        &= \left(\int_{-\infty}^{\infty} x(t) e^{-i2\pi ft} dt \right) e^{-i2\pi fT}  \nonumber\\
                         &= \mathcal{F}[x(t)] e^{-i2\pi fT}
 \end{align}
 あれ？
@@ -121,14 +121,14 @@ x_T(t) &=   \begin{cases}
 \end{align}
 このように表現したとき，$x(t)$のフーリエ変換は次のようになります．
 \begin{align}
-\mathcal{F}[x(t)]   &= \int_{-\infty}^{\infty} \sum_{n=-\infty}^{\infty} x_T(t - nT) e^{-i2\pi f t} dt\\
+\mathcal{F}[x(t)]   &= \int_{-\infty}^{\infty} \sum_{n=-\infty}^{\infty} x_T(t - nT) e^{-i2\pi f t} dt \nonumber\\
                     &= \sum_{n=-\infty}^{\infty} \int_{-\infty}^{\infty} x_T(t - nT) e^{-i2\pi f t} dt
 \end{align}
 ここで，$t'=t-nT$と置換したのちに，$t'=t$と置き換えれば，
 \begin{align}
-\mathcal{F}[x(t)]   &= \sum_{n=-\infty}^{\infty} \int_{-\infty}^{\infty} x_T(t) e^{-i2\pi f (t+nT)} dt \\
-                    &= \sum_{n=-\infty}^{\infty} \left( \int_{-\infty}^{\infty} x_T(t) e^{-i2\pi f t} dt \right) e^{-i2 \pi f nT} \\
-                    &= \sum_{n=-\infty}^{\infty} \mathcal{F}[x_T(t)] e^{-i2 \pi f nT} \\
+\mathcal{F}[x(t)]   &= \sum_{n=-\infty}^{\infty} \int_{-\infty}^{\infty} x_T(t) e^{-i2\pi f (t+nT)} dt \nonumber\\
+                    &= \sum_{n=-\infty}^{\infty} \left( \int_{-\infty}^{\infty} x_T(t) e^{-i2\pi f t} dt \right) e^{-i2 \pi f nT} \nonumber\\
+                    &= \sum_{n=-\infty}^{\infty} \mathcal{F}[x_T(t)] e^{-i2 \pi f nT} \nonumber\\
                     &= \mathcal{F}[x_T(t)] \sum_{n=-\infty}^{\infty}  e^{-i2 \pi f nT}
 \end{align}
 を得ます．
@@ -145,8 +145,8 @@ $\mathcal{F}[x(t)]$のフーリエ変換結果が$f=\frac{n}{T}$でのみ値を�
 式(\ref{eq:comb_function})が成り立つかどうかを確認するには，櫛型関数が周期関数であることを利用して，櫛型関数のフーリエ級数展開を行うことで確認できます．
 周波数領域であることに注意して，櫛型関数を複素フーリエ級数展開したときの係数$c_{comb, n}$を計算すると，
 \begin{align}
-c_{comb, n} &= T \int_{-\frac{1}{2T}}^{\frac{1}{2T}} \left( \frac{1}{T} \sum_{m=-\infty}^{\infty} \delta\left(f - \frac{m}{T}\right) \right) e^{-i 2\pi n f T} df \\
-    &= \int_{-\frac{1}{2T}}^{\frac{1}{2T}} \delta(f) e^{-i 2\pi n f T} df \\
+c_{comb, n} &= T \int_{-\frac{1}{2T}}^{\frac{1}{2T}} \left( \frac{1}{T} \sum_{m=-\infty}^{\infty} \delta\left(f - \frac{m}{T}\right) \right) e^{-i 2\pi n f T} df \nonumber\\
+    &= \int_{-\frac{1}{2T}}^{\frac{1}{2T}} \delta(f) e^{-i 2\pi n f T} df \nonumber\\
     &= 1
 \end{align}
 となり，結局
@@ -161,7 +161,7 @@ c_{comb, n} &= T \int_{-\frac{1}{2T}}^{\frac{1}{2T}} \left( \frac{1}{T} \sum_{m=
 が成立します．
 さらに，
 \begin{align}
-\mathcal{F}[x_T(t)] &= \int_{-\infty}^{\infty} x_T(t) e^{-i2\pi ft} dt \\
+\mathcal{F}[x_T(t)] &= \int_{-\infty}^{\infty} x_T(t) e^{-i2\pi ft} dt \nonumber\\
     &= \int_{0}^{T} x(t) e^{-i2\pi ft} dt
 \end{align}
 ですから，
@@ -172,7 +172,7 @@ c_{comb, n} &= T \int_{-\frac{1}{2T}}^{\frac{1}{2T}} \left( \frac{1}{T} \sum_{m=
 おお，フーリエ級数展開の形が見えてきましたね．
 $x(t)$を複素フーリエ級数展開したときの係数を$c_{x,n}$とすれば，
 \begin{align}
-\mathcal{F}[x(t)] &= \sum_{n=-\infty}^{\infty} \left(\int_0^T x(t) e^{-i2\pi \frac{n}{T} t} dt \right) \delta\left(f - \frac{n}{T}\right) \\
+\mathcal{F}[x(t)] &= \sum_{n=-\infty}^{\infty} \left(\int_0^T x(t) e^{-i2\pi \frac{n}{T} t} dt \right) \delta\left(f - \frac{n}{T}\right) \nonumber\\
                   &= \sum_{n=-\infty}^{\infty} c_{x,n} \delta\left(f - \frac{n}{T}\right)
 \end{align}
 となります！！
@@ -196,9 +196,9 @@ x^D(t) = S_{f_s}[x(t)] = x(t) \left(T_s \sum_{n=-\infty}^{\infty} \delta\left(t-
 \end{align}
 では，離散時間関数$x^D(t)$のフーリエ変換を計算すると，
 \begin{align}
-\mathcal{F}[x^D(t)] &= \int_{-\infty}^{\infty} x^D(t) e^{-i2\pi ft} dt\\
-    &= \int_{-\infty}^{\infty} x(t) \left(T_s \sum_{n=-\infty}^{\infty} \delta\left(t- nT_s\right) \right) e^{-i2\pi ft} dt \\
-    &= T_s \sum_{n=-\infty}^{\infty} \int_{-\infty}^{\infty} x(t) \delta\left(t- nT_s\right) e^{-i2\pi ft} dt \\
+\mathcal{F}[x^D(t)] &= \int_{-\infty}^{\infty} x^D(t) e^{-i2\pi ft} dt\nonumber\\
+    &= \int_{-\infty}^{\infty} x(t) \left(T_s \sum_{n=-\infty}^{\infty} \delta\left(t- nT_s\right) \right) e^{-i2\pi ft} dt \nonumber\\
+    &= T_s \sum_{n=-\infty}^{\infty} \int_{-\infty}^{\infty} x(t) \delta\left(t- nT_s\right) e^{-i2\pi ft} dt \nonumber\\
     &= T_s \sum_{n=-\infty}^{\infty} x\left(nT_s\right) e^{-i2\pi fnT_s}
 \end{align}
 おお，これまた面白い結果が出てきました．
@@ -223,17 +223,17 @@ x_n(t) &=   \mathcal{F}^{-1}[X_n(f)]
 $x_n(t)$のことを，$nf_s$を中心周波数としたベースバンド信号と呼びます．
 すると，サンプリング後の信号のフーリエ変換は，
 \begin{align}
-\mathcal{F}[S_{f_s}[x(t)]] &= \sum_{n=-\infty}^{\infty} \left(T_s \sum_{m=-\infty}^{\infty} x_m(nT_s) e^{i2\pi mf_s n T_s} \right) e^{-i2\pi fnT_s} \\
-    &= \sum_{n=-\infty}^{\infty} \left(T_s \sum_{m=-\infty}^{\infty} x_m(nT_s) \right) e^{-i2\pi fnT_s} \\
-    &= \sum_{m=-\infty}^{\infty} \sum_{n=-\infty}^{\infty} T_s x_m(nT_s) e^{-i2\pi fnT_s} \\
+\mathcal{F}[S_{f_s}[x(t)]] &= \sum_{n=-\infty}^{\infty} \left(T_s \sum_{m=-\infty}^{\infty} x_m(nT_s) e^{i2\pi mf_s n T_s} \right) e^{-i2\pi fnT_s} \nonumber\\
+    &= \sum_{n=-\infty}^{\infty} \left(T_s \sum_{m=-\infty}^{\infty} x_m(nT_s) \right) e^{-i2\pi fnT_s} \nonumber\\
+    &= \sum_{m=-\infty}^{\infty} \sum_{n=-\infty}^{\infty} T_s x_m(nT_s) e^{-i2\pi fnT_s} \nonumber\\
     &= \sum_{m=-\infty}^{\infty} \mathcal{F}[S_{f_s}[x_m(t)]]
 \end{align}
 となりました．
 同様の導出を$x(t)=x_m(t)e^{i2\pi nf_s t}$とすることで，帯域制限された信号$x_m(t)e^{i2\pi nf_s t}$のスペクトルを計算することができます．
 \begin{align}
-\mathcal{F}[S_{f_s}[x_m(t)e^{i2\pi nf_s t}]] &= \mathcal{F}[S_{f_s}[x_m(t)]] \\
-    &= \mathcal{F}\left[x_m(t) \left(T_s \sum_{n=-\infty}^{\infty} \delta(t - nT_s) \right) \right] \\
-    &= \mathcal{F}\left[x_m \sum_{n=-\infty}^{\infty} e^{i2\pi n f_s t} \right] \\
+\mathcal{F}[S_{f_s}[x_m(t)e^{i2\pi nf_s t}]] &= \mathcal{F}[S_{f_s}[x_m(t)]] \nonumber\\
+    &= \mathcal{F}\left[x_m(t) \left(T_s \sum_{n=-\infty}^{\infty} \delta(t - nT_s) \right) \right] \nonumber\\
+    &= \mathcal{F}\left[x_m \sum_{n=-\infty}^{\infty} e^{i2\pi n f_s t} \right] \nonumber\\
     &= \sum_{n=-\infty}^{\infty} X_m(f - nf_s)
 \end{align}
 したがって，帯域制限された信号を時間的に離散化したのであれば，その信号をフーリエ変換した結果を$f_s$ごとにコピーした結果がフーリエ変換結果となります．
