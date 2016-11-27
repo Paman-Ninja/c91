@@ -4,7 +4,7 @@
 
 \section{はじめに}
 
-けーさん(\verb|@k3kaimu|)です．
+けーさん(\verb|@k3_kaimu|)です．
 皆さんはフーリエ変換って知ってますか？
 高専や大学の低学年で習う数学の積分変換の一つです．
 フーリエ変換の仲間として，フーリエ級数展開だったり，離散時間フーリエ変換，離散フーリエ変換があります．
@@ -189,14 +189,14 @@ $x(t)$を複素フーリエ級数展開したときの係数を$c_{x,n}$とす�
 
 この節では、連続時間関数から離散時間関数のフーリエ変換を用いて、離散時間フーリ変換の導出を行ってみます．
 連続時間関数から離散時間関数への変換として，先ほど使った櫛形関数を使います．
-この記事では，連続時間関数$x(t)$に対して離散時間関数を表す記号として$x^D(t)$を使用します．
-サンプリング周波数$f_s=\frac{1}{T_s}$でサンプリングする操作を$S_{f_s}$という演算子で定義すると，
+サンプリング周波数$f_s=\frac{1}{T_s}$でサンプリングする操作を$S_{f_s}$という演算子で定義すると，$x(t)$をサンプリングした信号は
 \begin{align}
-x^D(t) = S_{f_s}[x(t)] = x(t) \left(T_s \sum_{n=-\infty}^{\infty} \delta\left(t- nT_s\right) \right)
+S_{f_s}[x(t)] = x(t) \left(T_s \sum_{n=-\infty}^{\infty} \delta\left(t- nT_s\right) \right)
 \end{align}
-では，離散時間関数$x^D(t)$のフーリエ変換を計算すると，
+となります．
+では，離散時間関数$S_{f_s}[x(t)]$のフーリエ変換を計算すると，
 \begin{align}
-\mathcal{F}[x^D(t)] &= \int_{-\infty}^{\infty} x^D(t) e^{-i2\pi ft} dt\nonumber\\
+\mathcal{F}[S_{f_s}[x(t)]] &= \int_{-\infty}^{\infty} x^D(t) e^{-i2\pi ft} dt\nonumber\\
     &= \int_{-\infty}^{\infty} x(t) \left(T_s \sum_{n=-\infty}^{\infty} \delta\left(t- nT_s\right) \right) e^{-i2\pi ft} dt \nonumber\\
     &= T_s \sum_{n=-\infty}^{\infty} \int_{-\infty}^{\infty} x(t) \delta\left(t- nT_s\right) e^{-i2\pi ft} dt \nonumber\\
     &= T_s \sum_{n=-\infty}^{\infty} x\left(nT_s\right) e^{-i2\pi fnT_s}
@@ -242,5 +242,13 @@ $x_n(t)$のことを，$nf_s$を中心周波数としたベースバンド信号
 \mathcal{F}[S_{f_s}[x(t)]] = \sum_{n=-\infty}^{\infty} \sum_{m=-\infty}^{\infty} X_m(f - nf_s)
 \end{align}
 となり，元のスペクトル$X(f)$を$f_s$ごとにぶつ切りにして，すべての和をとったものが，全周波数帯域にコピーされます．
+
+以上より，フーリエ変換と離散時間フーリエ変換の関係性について，次のことがいえます．
+\begin{itemize}
+\item サンプリング周期が$T_s$のとき，$x[n]=x(nT_s)T_s$と定義することで，離散時間フーリエ変換とフーリエ変換は等価である．
+\item 離散時間信号のスペクトルは，サンプリング周波数$f_s$おきに周期関数となる．
+\item 周波数0を中心に$f_s$で帯域制限されている連続時間信号をサンプリングし離散時間信号に変換したとき，そのスペクトルは元の連続時間信号のスペクトルと周波数0付近の帯域で一致する．
+\item $f_s$で帯域制限されていない場合，$f_s$おきにスペクトルをぶつ切りにしたスペクトルが全て重なり，その重なったスペクトルが$f_s$ごとに繰り返される．
+\end{itemize}
 
 % \onecolumn
