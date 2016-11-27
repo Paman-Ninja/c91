@@ -172,7 +172,7 @@ c_{comb, n} &= T \int_{-\frac{1}{2T}}^{\frac{1}{2T}} \left( \frac{1}{T} \sum_{m=
 おお，フーリエ級数展開の形が見えてきましたね．
 $x(t)$を複素フーリエ級数展開したときの係数を$c_{x,n}$とすれば，
 \begin{align}
-\mathcal{F}[x(t)] &= \sum_{n=-\infty}^{\infty} \left(\int_0^T x(t) e^{-i2\pi \frac{n}{T} t} dt \right) \delta\left(f - \frac{n}{T}\right) \nonumber\\
+\mathcal{F}[x(t)] &= \sum_{n=-\infty}^{\infty} \left(\frac{1}{T} \int_0^T x(t) e^{-i2\pi \frac{n}{T} t} dt \right) \delta\left(f - \frac{n}{T}\right) \nonumber\\
                   &= \sum_{n=-\infty}^{\infty} c_{x,n} \delta\left(f - \frac{n}{T}\right)
 \end{align}
 となります！！
@@ -249,6 +249,56 @@ $x_n(t)$のことを，$nf_s$を中心周波数としたベースバンド信号
 \item 離散時間信号のスペクトルは，サンプリング周波数$f_s$おきに周期関数となる．
 \item 周波数0を中心に$f_s$で帯域制限されている連続時間信号をサンプリングし離散時間信号に変換したとき，そのスペクトルは元の連続時間信号のスペクトルと周波数0付近の帯域で一致する．
 \item $f_s$で帯域制限されていない場合，$f_s$おきにスペクトルをぶつ切りにしたスペクトルが全て重なり，その重なったスペクトルが$f_s$ごとに繰り返される．
+\end{itemize}
+
+
+\section{フーリエ変換と離散フーリエ変換}
+
+離散フーリエ変換は，周期信号を離散化した信号に対するフーリエ変換です．
+ですので，周期信号のフーリエ変換を離散時間信号について解くことで離散フーリエ変換を得ることができます．
+復習になりますが，周期信号$x(t)$について，そのスペクトルは
+\begin{align}
+\mathcal{F}[x(t)] &= \underbrace{\left(\int_0^T x(t) e^{-i2\pi ft} dt \right)}_{c_x(f)} \left(\frac{1}{T} \sum_{n=-\infty}^{\infty} \delta\left(f - \frac{n}{T} \right) \right) \nonumber\\
+    &= c_x(f) \left(\frac{1}{T} \sum_{n=-\infty}^{\infty} \delta\left(f - \frac{n}{T} \right) \right)
+\end{align}
+になります．
+今，周期$T$の中に$N$個のサンプル点がある，つまり$T/T_s = N$である場合を考えます．
+このとき，連続時間信号$x(t)$を離散化した信号に対して$c_x(f)$は，次のようになります．
+\begin{align}
+c_x(f) &= \int_0^T x(t)\left(T_s \sum_{n=-\infty}^{\infty} \delta(t - nT_s) \right) e^{-i2\pi ft} dt \nonumber\\
+    &= \sum_{n=-\infty}^{\infty} \int_0^T T_s x(t) \delta(t - nT_s) e^{-i2\pi ft} dt \nonumber\\
+    &= \sum_{n=0}^N T_s x(nT_s) e^{-i2\pi f nT_s}
+\end{align}
+したがって，
+\begin{align}
+\mathcal{F}[x(t)] &= \left(\sum_{n=0}^N T_s x(nT_s) e^{-i2\pi f nT_s}\right) \left(\frac{1}{T} \sum_{n=-\infty}^{\infty} \delta\left(f - \frac{n}{T} \right) \right) \nonumber\\
+                  &= \frac{1}{T} \sum_{k=-\infty}^{\infty} \left(\sum_{n=0}^{N-1} T_s x(nT_s) e^{-i2\pi \frac{k}{T} nT_s}\right) \delta\left(f - \frac{k}{T} \right)\nonumber\\
+                  &= \frac{1}{T} \sum_{k=-\infty}^{\infty} \underbrace{\left(\sum_{n=0}^{N-1} T_s x(nT_s) e^{-i\frac{2\pi}{N} kn}\right)}_{X'(k/T)} \delta\left(f - \frac{k}{T} \right) \nonumber\\
+                  &= \frac{1}{T} \sum_{k=-\infty}^{\infty} X'\left(\frac{k}{T} \right) \delta\left(f - \frac{k}{T}\right)
+\end{align}
+となります．
+ここで，ある連続時間信号$z(s)$について，間隔$\alpha$で離散化したとき
+\begin{align}
+S_{\alpha}[z(s)] &= z(s) \left(\alpha \sum_{n=-\infty}^{\infty} \delta(s - \alpha n) \right) \nonumber\\
+    &= \sum_{n=-\infty}^{\infty} \alpha z(\alpha n) \delta(s - \alpha n) \nonumber\\
+    &= \sum_{n=-\infty}^{\infty} z[n] \delta(s - \alpha n)
+\end{align}
+となるように$z[n]$を定義します．
+こうすると，離散フーリエ変換により得られるスペクトル$X[k]$は，
+\begin{align}
+X[k] = \frac{1}{T} \sum_{n=0}^{N-1} x[n] e^{-i\frac{2\pi}{N} kn}
+\end{align}
+となります．
+離散フーリエ変換のよく知られた公式では，$T=1$ (このとき，$f=k$)と正規化することで，
+\begin{align}
+X[k] = \sum_{n=0}^{N-1} x[n] e^{-i\frac{2\pi}{N} kn}
+\end{align}
+という風になります．
+
+以上より，フーリエ変換と離散フーリエ変換の間には次のような関係が成り立ちます．
+\begin{itemize}
+\item 離散フーリエ変換で得られるスペクトル$X[k]$は，フーリエ級数展開の係数$c_n$を離散時間信号について解いたものに等しい．したがって，$X[k]$をデルタ関数と掛け合わせて総和を取ることでフーリエ変換によるスペクトルを得ることができる．
+\item よく知られた公式では，繰り返し周期$T$が$1$に正規化されている．つまり，$f=k$であり，サンプリング周波数は$T_s = 1/N$となる．
 \end{itemize}
 
 % \onecolumn
