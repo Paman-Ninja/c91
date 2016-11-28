@@ -13,43 +13,58 @@
 参考にするとよぎぃ通信のタイプセット設定は第3号で用いたもの\footnote{\url{https://github.com/tut-cc/c90}}です.
 
 \section{パッケージファイルを読み解く前に}
+\subsection{簡単な{\TeX}マクロの説明}
+\newcommand{\lcommand}{/コマンド/}
+\newcommand{\lCommand}[1]{/#1/}
 {
 \def\command{/コマンド/}
 \def\Command#1{/#1/}
-\newcommand{\lcommand}{/コマンド/}
 
 パッケージファイルを読み解くにはまず{\TeX}および{\LaTeX}におけるマクロについての知識が必要です.
-{\TeX}におけるマクロは次のような構文で定義されます\footnote{正確に言えば{\TeX}のcontrol sequence}.
+{\TeX}におけるマクロは次のように構文で定義します\footnote{正確に言えば{\TeX}のcontrol sequence}.
 \begin{verbatim}
 \def\command{/コマンド/}
 \end{verbatim}
-
-これで\verb|\command|というマクロが定義されました.これを呼び出すには次のように記述します.
+これで\verb|\command|というマクロが定義されました.
+このように{\TeX}におけるマクロは\verb|\def\マクロ名{\置換文字列}|の形で定義されます.
+次に,定義されたマクロを呼び出すことにします.
+マクロを呼び出すには\verb|\マクロ名|の形で呼び出すマクロを指定します.
+今回定義した\verb|command|マクロを呼び出してみます.
 \begin{verbatim}
 \command{}
 \end{verbatim}
-得られる出力は\texttt{\command{}}となります.
-これが{\TeX}での基本的なマクロの定義になります.
+実際に呼び出してみると\texttt{\command{}}という出力が得られます.
+これが{\TeX}の基本的なマクロの定義です.
+このように{\TeX}のマクロは与えられたマクロ名を定義されている置換文字列へと置き換えるものであることが分かります.
 
 次に,引数を取る{\TeX}のマクロ\verb|\Command|を定義します.
+引数を取ることでマクロが置換文字列の内容を自由に変更することができます.
 \begin{verbatim}
 \def\Command#1{/#1/}
 \end{verbatim}
-\verb|\Command|は引数を一つ取り,\verb|\command|と同様に引数として与えられた文字列の両端に/を追加します.
-実際に\verb|\Command|を呼び出すには次のように記述します.
+先ほどのマクロと異なり,マクロ名の後ろに\verb|#1|という記述が追加されています.
+これは,マクロが取る引数の数を示しており,マクロの置換文字列内部では\verb|#1|という名前で与えられた引数を参照することができます.
+先ほどと同じように定義されたマクロを呼び出します.
 \begin{verbatim}
 \Command{コマンド呼び出し}
 \end{verbatim}
-得られる出力は\texttt{\Command{コマンド呼び出し}}となります.
+実際に呼び出してみると\texttt{\Command{コマンド呼び出し}}という出力が得られます.
 これで,引数を取る{\TeX}マクロを定義することができました.
+引数が複数存在するときはそれぞれの引数を\{\}で囲むことで引数の範囲を明示します.
 
-{\LaTeX}では{\TeX}とは異なる形でマクロを定義することができます.
-先ほどと同様のマクロを{\LaTeX}における記法を用いて定義すると次のようになります.
+{\LaTeX}では{\TeX}とは異なる形でマクロを定義することができます\footnote{これも正確に言えば{\LaTeX}のUser-defined command}.
+\verb|\command|と同様のマクロを{\LaTeX}における記法を用いて定義してみます.
 \begin{verbatim}
 \newcommand{\lcommand}{/コマンド/}
 \end{verbatim}
 }
-得られる出力は\texttt{\lcommand}となります.
+呼び出し方は{\TeX}のマクロと何ら変わりません.呼び出してみると\texttt{\lcommand{}}という出力が得られます.
+同じように\verb|Command|と同様のマクロを定義してみます.
+\begin{verbatim}
+\newcommand{\lCommand}[1]{/#1/}
+\end{verbatim}
+そして\verb|\lCommand{コマンド呼び出し}|とすると得られる出力は\texttt{\lCommand{コマンド呼び出し}}となります.
+これが{\TeX}および{\LaTeX}のマクロの基本です.
 
 \section{クラスそしてプリアンブル}
 
@@ -175,12 +190,22 @@
 \end{verbatim}
 この設定では奇数ページと偶数ページの左マージンをそれぞれ同一にしています.
 計算してみると奇数ページと偶数ページのノドと小口の幅は次のようになります.
-\begin{description}
-	\item[奇数ページのノド] 11.19mm
-	\item[奇数ページの小口] 15.81mm
-	\item[偶数ページのノド] 15.81mm
-	\item[偶数ページの小口] 11.19mm
-\end{description}
+\begin{table}[!ht]
+	\centering
+	\caption{偶数/奇数ページのノド/小口}
+	\label{tbl:oddevenmargins}
+	\begin{tabular}{c|cc} \hline \hline
+		& ノド & 小口 \\ \hline
+		偶数ページ & 15.81mm & 11.19mm \\
+		奇数ページ & 11.19mm & 15.81mm \\ \hline
+	\end{tabular}
+\end{table} 
+% \begin{description}
+% 	\item[奇数ページのノド] 11.19mm
+% 	\item[奇数ページの小口] 15.81mm
+% 	\item[偶数ページのノド] 15.81mm
+% 	\item[偶数ページの小口] 11.19mm
+% \end{description}
 というわけで,とよぎぃ通信では奇数ページと偶数ページでノドと小口が揃っていないということがよく分かります.
 今までのとよぎぃ通信は,奇数ページの方が綴じ側のアキが狭くなっているはずですが,気づかれた方はいるのでしょうか.
 
@@ -203,7 +228,8 @@
 \subsection{図や表の挿入についての設定}
 
 {\pLaTeX}では図や表はフロートと呼ばれる領域を"本文"領域内部に作成した上で,フロート内に配置されます.
-\begin{lstlisting}[caption = フロートまわりの設定, label = list:float, language = tex]
+\reflisting{list:float}ではフロートが挿入された時の見た目に関する設定を行っています..
+\begin{lstlisting}[caption = フロートついての設定, label = list:float, language = tex]
 \setlength{\intextsep}{10.5pt}
 \setlength{\textfloatsep}{10.5pt}
 
@@ -228,12 +254,11 @@
 \makeatother
 \end{lstlisting}
 
-はじめに\verb|\setlength|で示された設定について見ていきます.
-これらは,フロートの前後に挿入されるアキについて指定を行います.
+1行目から順番に見ていきます.
+1行目と2行目は\verb|\setlength|マクロが使われています.
 \verb|\textfloatsep|は本文領域の下端にフロートを挿入した時に,
 本文とフロートの間に挿入されるアキを指定しています.
 この場合はフロートの上部にのみアキが挿入されます.
-
 \verb|\intextsep|は本文領域内にフロートを挿入した時に,
 本文とフロートの間に挿入されるアキについて指定を行います.
 図や表を挿入するときのオプションに\texttt{[h]}を指定した時に
@@ -247,6 +272,65 @@
 次に\verb|makeatletter|$\sim$\verb|makeatother|で囲まれた範囲の設定について見ていきます.
 重要な部分は\verb|\long\def\@makecaption|によって定義される\verb|@makecaption|マクロです.
 マクロ定義のプレフィックスとして指定されている\verb|\long|はマクロによって展開される文字列内に改行や段落が含まれることを意味しています.
+少しわかりづらい部分があるため,一つ一つほぐしながら見ていきます.
+まず,はじめに\verb|@makecaption|は引数を2つ取ります.
+\verb|#1|はキャプションの番号が,\verb|#2|にはキャプションとして表示するテキストが入ります.
+
+\begin{verbatim}
+\vskip\abovecaptionskip
+\end{verbatim}%
+は{\TeX}のプリミティブマクロ\verb|\vskip|を呼び出しています\footnote{正確にはprimitive control sequence}\footnote{\url{https://www.tug.org/utilities/plain/cseq.html#vskip-rp}}.
+これは引数を一つ取るプリミティブマクロで,垂直方向のアキを挿入します.
+ところで\verb|\abovecaptionskip|は\verb|@makecaption|の定義の直前に\verb|\setlength|によってその大きさを0ptにされています.
+このことからフロートに表題を加える際に表題の上部にはアキを追加しないことを意味します.
+
+\begin{verbatim}
+\iftdir\sbox\@tempboxa{#1\hskip1zw#2}%
+\else\sbox\@tempboxa{#1 #2}%
+\fi
+\end{verbatim}%
+は{\TeX}マクロに慣れていないとややこしく見えます.
+\verb|\iftdir|は{p\TeX}の拡張プリミティブマクロで,現在の文字組の方向が縦向きである時に真を取ります\footnote{\url{https://osdn.net/projects/eptex/docs/tc16ptex/ja/1/tc16ptex.pdf}}
+\footnote{\url{http://d.hatena.ne.jp/zrbabbler/20160612/1465700860}}.
+とよぎぃ通信では全ページ横組となっているため,なぜこのマクロが加えられているのかは不明ですが利用されています.
+\verb|\iftdir|によらず\verb|\sbox|を呼び出しています.
+これは{\LaTeX}拡張のマクロの一つであり,\verb|\sbox{cmd}{text}|という形式になっています.
+このマクロでは,\verb|{text}|が入る大きさのボックスを作成し,
+その中にテキストを実際に流しこむ代わりに\verb|{cmd}|で指定されたマクロにボックスの情報を保存します.
+ここでは\verb|@tempboxa|というマクロにキャプションを作るときに指定されたテキストが収まるようなボックスの情報が保存されます.\\
+また,縦組みの時にボックスを作成するにあたって\verb|\hskip1zw|という一見不可思議なプリミティブマクロが挿入されています.
+\verb|\hskip|はvertical modeで用いられるとき,水平方向へのアキを挿入するのではなく
+新たな段落を生成するという動作が定義されており,これを利用したものと考えられます.
+作成された\verb|@tempboxa|を使用するのが次の\verb|\ifdim|から始まるマクロです.
+\footnote{というのも{p\TeX}内部において\texttt{\textbackslash{}tate}がどのように定義されているかを確認していないためである}
+
+この部分の解説は次の2つを詳しく読んだほうが良い
+% ftp://ftp.ccu.edu.tw/pub/tex/language/japanese/ptex-base/ptexdoc.tex
+% file:///home/um-akahana/Downloads/doronawa0.4.pdf
+\begin{verbatim}
+\ifdim \wd\@tempboxa >\hsize
+\iftdir #1\hskip1zw#2\relax\par
+\else #1 #2\relax\par\fi
+\else
+\global \@minipagefalse
+\hbox to\hsize{\hfil\box\@tempboxa\hfil}%
+\fi
+\end{verbatim}
+\verb|\ifdim|は{\TeX}のプリミティブマクロで次元を持つ2つの値を指定された比較演算子で比較する.
+ここで言う次元はmmやptなどの組版を行う際に用いる大きさや長さを示す単位を指します.
+\verb|\ifdim|ではキャプションが入るボックスの長さが組方向の行の長さを超えていないか確認している.
+\verb|\wd|は{\TeX}のプリミティブマクロで引数として与えられたボックスの横幅を取得します.
+% hsizeは水平方向の長さの可能性がある.\TeXの標準は左から右に字が送られていって行を形成し
+% 行は上から下に送られていくことでページを作成する
+\verb|\hsize|は行の長さを示しているため,キャプションが行の長さより大きくなっていないかという判定をしています.
+行の長さよりもキャプションが入るボックスが大きくなっている場合は,キャプションをなるべく表示するためにキャプションをページに対して中揃えしないようにしています.
+\verb|\relax|は何もしないということを意味する{\TeX}のプリミティブマクロです.
+また,\verb|\par|は改段落を行う{\TeX}のプリミティブマクロです.
+
+キャプションが行の長さを超えない場合はそのまま出力すれば良いということになります.
+この時は,キャプションの長さが組方向の行の長さを超えないために,キャプションをセンタリングして出力しています.
+\verb|\hbox|は{\TeX}のプリミティブマクロで水平方向のボックスを作成します.
+ここでは引数として\verb|to\hsize|を与えているため行の長さ
 
 \subsection{数式についての設定}
 \begin{lstlisting}[caption = 数式まわりの設定, label = list:eq, language = tex]
@@ -255,3 +339,9 @@
 \def\theequation{\thesection.\arabic{equation}}
 \makeatother
 \end{lstlisting}
+
+数式についての設定はフロートについての設定に比べるとかなり簡単なものです.
+l行目と5行目は,フロートについての設定でも登場したある種の定型句です.
+
+\section*{参考文献}
+\url{http://www.biwako.shiga-u.ac.jp/sensei/kumazawa/tex.html}
