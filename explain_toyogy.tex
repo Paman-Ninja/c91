@@ -1,4 +1,4 @@
-\newcommand*{\reflisting}[1]{\lstlistingname\ref{#1}}
+\newcommand*{\reflisting}[1]{\lstlistingname\ \ref{#1}}
 \renewcommand*\descriptionlabel[1]{\normalfont\headfont #1 :\hfil}
 
 \chapter{詳解:とよぎぃ通信}
@@ -122,7 +122,7 @@
 これらの設定でとよぎぃ通信のタイプセットは行われています.というわけでこれで解説終了と言いたいところですが,ひとつだけ中身が全くわからないパッケージファイルがあります.
 \texttt{toyogy.sty}こそがとよぎぃ通信を刊行する上での一番大事なパッケージファイルになのに,このままでは肝心の中身がさっぱりわかりません.
 そこで,次節では\texttt{toyogy.sty}の中身について具体的な解説を施します.
-\section{toyogy.sty}
+\section{toyogy.styを読み解く}
 
 とよぎぃ通信における設定の核を為すのが\texttt{toyogy.sty}です.
 このパッケージファイルにはとよぎぃ通信を刊行するときに必要となる様々な設定が書き込まれています.
@@ -157,7 +157,6 @@
 \setlength{\topmargin}{30truemm}
 \addtolength{\topmargin}{-2.4truein}
 \addtolength{\footskip}{8truemm}
-\pagestyle{plain}
 \end{lstlisting}
 何が何やらという感じなので,一つずつ見ていきましょう.
 
@@ -213,8 +212,8 @@
 \end{verbatim}
 
 この設定では奇数ページと偶数ページの左マージンをそれぞれ同一にしています.
-単位が混在しているためmmに変換して計算すると,左マージンはおおよそ-14.21mmとなります.
-計算してみると奇数ページと偶数ページのノドと小口のアキは表\ref{tbl:oddevenmargins}のようになります.
+単位が混在しているためmmに変換して計算すると,左マージンはおおよそ\,-14.21mmとなります.
+計算してみると奇数ページと偶数ページのノドと小口のアキは\tablename\ref{tbl:oddevenmargins}のようになります.
 \begin{table}[!ht]
 	\centering
 	\caption{偶数/奇数ページのノド/小口}
@@ -244,7 +243,7 @@
 \setlength{\topmargin}{30truemm}
 \addtolength{\topmargin}{-2.4truein}
 \end{verbatim}
-\verb|\topmargin|を単位系を直して計算してみるとおおよそ-30.96mmとなります.
+\verb|\topmargin|を単位系を直して計算してみるとおおよそ\,-30.96mmとなります.
 これを先ほどの式に当てはめます. 
 \verb|jsbook|では\,\verb|\voffset|が0pt, \verb|\headsep|が17pt, \verb|\headheight|が20pt
 となっているのでこれらの単位系を揃えて計算するとおおよそ7.45mmとなります.
@@ -252,19 +251,19 @@
 
 また,ここから``本文''とページ下端の間に存在するアキも導出できます.
 ページサイズがB5(JIS)のため,縦の長さは257mmです.
-``本文''の縦の長さが230mm,ページ上端と``本文''のアキがおおよそ7.45mmのため,$257 - 230 - 7.45 \simeq 19.55\mathrm{mm}$が``本文''とページ下端の間に存在するアキと求まります.
+``本文''の縦の長さが230mm,ページ上端と``本文''のアキがおおよそ7.45mmのため,\,$257 - 230 - 7.45 \simeq 19.55\mathrm{mm}$が``本文''とページ下端の間に存在するアキと求まります.
 
 ページレイアウトについて得られたことをまとめてみましょう.
 ページレイアウトの設定では``本文''の大きさとそれに伴って変更された``ヘッダー'',\,``フッター''のマージンについて見てきました.
 結果としてとよぎぃ通信第3号は次のようにページレイアウトが設計されていたことが明らかとなりました.
-表\ref{tbl:toyogylayout}にそれぞれのアキをまとめて示します.
+\tablename\ref{tbl:toyogylayout}にそれぞれのアキをまとめて示します.
 
 \begin{table}[!ht]
 	\centering
 	\caption{とよぎぃ通信の版面設計}
 	\label{tbl:toyogylayout}
 	\begin{tabular}{c|cc|c} \hline \hline
-		& 偶数ページ & 奇数ページ & \verb|jsbook|のレイアウト(11pt) \\
+		& 偶数ページ & 奇数ページ & \verb|jsbook|のレイアウト(11pt) \\ \hline
 		天 & 7.45mm & 7.45mm & 33.5mm \\
 		地 & 19.55mm & 19.55mm & 40.0mm \\
 		ノド & 15.81mm & 11.19mm & 20.5mm \\
@@ -276,18 +275,34 @@
 とよぎぃ通信では書きたいことを前面に押し出すために,\,``本文''を広く取っていると考えられます.
 ただし真相は杳として知れません.
 
-さて, \reflisting{list:layout}の設定のなかでひとつだけ解説していないものがあります.
-それが3行目のマクロです.\,
-\verb|\fullwidth|は\verb|jsclasses|で定義されているマクロです.
-一般的に書籍の組版を行う場合,本文の1行は全角40文字と設定されることが多いです.
-この場合,全角40文字に収まるように左右のマージンを調整するわけですが,``ヘッダー''や``フッター''は本文領域の幅よりも広く取りたいということが考えられます.
-そのために用意されているのがこの\verb|\fullwidth|です.\,
-\verb|jsbook|では紙幅から36mmを引いた値が\verb|\fullwidth|に設定されることになっていますが,とよぎぃ通信では``本文''の幅と同じ値としています.
-つまり``ヘッダー''と``フッター''の幅が``本文''と同じになっています.
-ただ,それを実感することはなかなか難しいと思います.
+ページレイアウトの設定はまだ続きます.
+``本文''下部の余白には``フッター''が挿入されます.
+``本文''下端と``フッター''上端のアキについて指定するためには少しだけ考えねばならないことがあります.
+\reflisting{list:layout}の10行目に指定されている\verb|\footskip|は
+``本文''下端と``フッター''下端の間の幅を指定するものです.
+一方で\verb|\footheight|というマクロがあり,これによって``フッター''の高さが指定されます.
+ということは``本文''下端と``フッター''上端の間のアキは\verb|\footskip| - \verb|\footheight|で求まることが分かります.
+標準の設定では\verb|\footskip|は0mmに指定されているため``フッター''の下端と``本文''の下端が揃うことになります.
+つまり``フッター''が本文に食い込むことになります.なぜ,標準設定ではこのようになっているのか.
+なぜならば,\,\verb|jsbook|の設定ではノンブルが``フッター''ではなく
+``ヘッダー''に出力されるため``フッター''の設定を気にする必要がないのです.
+とよぎぃ通信では\verb|\footskip|に8mm追加しているため,\,``フッター''の下端が``本文''の下端から8mm下側に出力されることになります.
+これによって,ノンブルを``フッター''に出力できるようになりました.
 
-さらに``フッター''にも少しだけ手が加えられています.
-\begin{lstlisting}[caption = ``フッター''の設定, label = list:footer, language=tex]
+\reflisting{list:layout}の設定のなかで異質なものが3行目のマクロです.\,
+\verb|\fullwidth|は\verb|jsclasses|で定義されているマクロです.
+一般的に書籍の組版を行う場合,本文の1行は全角40文字と設定されます.
+この場合,1行が全角40文字となるように左右のマージンを調整しますが,``ヘッダー''や``フッター''は本文領域の幅よりも広いままにしたいことがあります.
+そのために用意されているのがこの\verb|\fullwidth|です.\,
+\verb|jsbook|では紙幅から36mmを引いた値が\,\verb|\fullwidth|に設定されることになっていますが,とよぎぃ通信では``本文''の幅と同じ値としています.
+つまり``ヘッダー''と``フッター''の幅が``本文''と同じになっています.
+
+\subsection{ノンブルと柱の設定}
+
+{\pLaTeX}ではノンブルや柱のレイアウトを制御するためにページスタイルというものを使います.
+ページスタイルには様々なものがありますが,とよぎぃ通信では\verb|plain|のページスタイルを使います.
+
+\begin{lstlisting}[caption = ノンブルと柱の設定, label = list:footer, language=tex]
 \makeatletter
 \def\ps@plainfoot{%
 \let\@mkboth\@gobbletwo
@@ -297,10 +312,22 @@
 \let\@evenfoot\@oddfoot}
 \let\ps@plain\ps@plainfoot
 \makeatother
+\pagestyle{plain}
 \end{lstlisting}
-``フッター''の設定で意味をなしているのは\texttt{\def\@oddfoot{\normalfont\hfil-- \thepage\ --\hfil}}のみになります.
-というのも,それ以外の設定は\texttt{jsbook}によって指定されているものと寸分違わぬものとなっているためです.
-抜き出した設定で行っているのはページ番号をフッターの中央揃えにして,ページ番号の両端にエンダッシュ(--)を追加する設定となっています.
+
+\reflisting{list:footer}の1行目から9行目が``フッター''にノンブルを表示するための設定です.
+1行目と9行目の\verb|\makeatletter|,\,\verb|\makeatother|は,
+それに囲まれた範囲内で\texttt{@}を使用可能にするというものです\footnote{{\TeX}のカテゴリーコードを変更することで\texttt{@}を使用可能にします}.
+2行目から7行目にページスタイルの設定をしています.
+\verb|\ps@plainfoot|は``フッター''のみに出力がなされるシンプルなページスタイルの設定です.
+``フッター''に何を表示するかをここで制御しています.
+とよぎぃ通信における設定で\verb|jsbook|標準から変更されているものは5行目の\verb|\def\@oddfoot{\normalfont\hfil-- \thepage\ --\hfil}|のみです.
+これは,ページ番号を表示するときにページ番号の左右にエンダッシュ(--)を追加する設定です.
+
+\reflisting{list:footer}の10行目で\verb|plain|のページスタイルを\verb|\ps@plainfoot|に設定しています.
+\verb|jsbook|の標準では``フッター''ではなく``ヘッダー''にノンブルと柱が表示されますが,
+ここで\verb|plain|のページスタイルに\verb|\ps@plainfoot|を設定しているため,
+``フッター''にノンブルが表示されることになります.
 
 \subsection{図や表の挿入についての設定}
 
@@ -345,7 +372,7 @@
 特に,ページ下端にフロートが挿入される場合のアキは標準設定に比べて
 半分ほどのアキになっています.
 
-次に\verb|makeatletter|$\sim$\verb|makeatother|で囲まれた範囲の設定について見ていきます.
+次に\verb|\makeatletter|\,$\sim$\,\verb|\makeatother|で囲まれた範囲の設定について見ていきます.
 重要な部分は\verb|\long\def\@makecaption|によって定義される\verb|@makecaption|マクロです.
 マクロ定義のプレフィックスとして指定されている\verb|\long|はマクロによって展開される文字列内に改行や段落が含まれることを意味しています.
 少しわかりづらい部分があるため,一つ一つほぐしながら見ていきます.
@@ -376,11 +403,10 @@
 ここでは\verb|@tempboxa|というマクロにキャプションを作るときに指定されたテキストが収まるようなボックスの情報が保存されます.\\
 また,縦組みの時にボックスを作成するにあたって\verb|\hskip1zw|という一見不可思議なプリミティブマクロが挿入されています.
 \verb|\hskip|はvertical modeで用いられるとき,水平方向へのアキを挿入するのではなく
-新たな段落を生成するという動作が定義されており,これを利用したものと考えられます.
+新たな段落を生成するという動作が定義されており,これを利用したものと考えられます\footnote{このあたりは{\pTeX}内部の縦書き設定に依存する箇所で今回の解説にはあまり大事ではないのでスルー}.
 作成された\verb|@tempboxa|を使用するのが次の\verb|\ifdim|から始まるマクロです.
-\footnote{というのも{p\TeX}内部において\texttt{\textbackslash{}tate}がどのように定義されているかを確認していないためである}
 
-この部分の解説は次の2つを詳しく読んだほうが良い
+% この部分の解説は次の2つを詳しく読んだほうが良い
 % ftp://ftp.ccu.edu.tw/pub/tex/language/japanese/ptex-base/ptexdoc.tex
 % file:///home/um-akahana/Downloads/doronawa0.4.pdf
 \begin{verbatim}
@@ -406,9 +432,10 @@
 キャプションが行の長さを超えない場合はそのまま出力すれば良いということになります.
 この時は,キャプションの長さが組方向の行の長さを超えないために,キャプションをセンタリングして出力しています.
 \verb|\hbox|は{\TeX}のプリミティブマクロで水平方向のボックスを作成します.
-ここでは引数として\verb|to\hsize|を与えているため行の長さ
+% ここでは引数として\verb|to\hsize|を与えているため行の長さ
 
 \subsection{数式についての設定}
+
 \begin{lstlisting}[caption = 数式まわりの設定, label = list:eq, language = tex]
 \makeatletter
 \@addtoreset{equation}{section}
