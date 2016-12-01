@@ -17,8 +17,6 @@
 	tabsize=2
 }
 
-\pagestyle{plain}
-
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{2}
 
@@ -45,12 +43,11 @@
 \def\ps@plainfoot{%
 \let\@mkboth\@gobbletwo
 \let\@oddhead\@empty
-\def\@oddfoot{\normalfont\hfil-- \thepage\ --\hfil}%
+\def\@oddfoot{\normalfont\hfil-- \thepage --\hfil}%
 \let\@evenhead\@empty
 \let\@evenfoot\@oddfoot}
 \let\ps@plain\ps@plainfoot
 \makeatother
-\pagestyle{plain}
 
 \makeatletter
 \long\def\@makecaption#1#2{%
@@ -75,4 +72,5 @@
 
 \renewcommand{\figurename}{Fig.}
 \renewcommand{\tablename}{Table }
+\pagestyle{plain}
 \setstretch{1.25}
