@@ -1,0 +1,48 @@
+\documentclass[12Q, uplatex]{jsbook}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{listings}
+\usepackage{layout}
+\usepackage{setspace}
+\usepackage{url}
+\usepackage{geometry}
+\usepackage[uplatex, jis2004]{otf}
+\geometry{dvipdfm, truedimen, b5j, left=18truemm, right=18truemm,
+top=30truemm, bottom=30truemm,
+marginparwidth=0pt,
+}
+% \setlength{\marginparwidth}{0mm}
+% \usepackage{toyogy}
+
+\renewcommand{\lstlistingname}{List}
+\lstset{language=c,
+	basicstyle=\ttfamily\small,
+	commentstyle=\textit,
+	classoffset=1,
+	keywordstyle=\bfseries,
+	frame=tbrl,
+	frameround=tttt,
+	framesep=5pt,
+	showstringspaces=false,
+	numbers=left,
+	stepnumber=1,
+	numberstyle=\scriptsize,
+	tabsize=2,
+	aboveskip=0.75zw,
+	belowskip=1.75zw
+}
+
+\setlength{\fullwidth}{\textwidth}
+\setlength{\baselineskip}{1.75zw}
+
+\begin{document}
+
+\frontmatter
+\tableofcontents
+
+\mainmatter
+\setcounter{page}{1}
+% \pagestyle{plain}
+
+\input{explain_toyogy}
+
+\end{document}
