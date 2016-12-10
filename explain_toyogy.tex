@@ -1,0 +1,557 @@
+\newcommand*{\reflisting}[1]{\lstlistingname\ \ref{#1}}
+\renewcommand*\descriptionlabel[1]{\normalfont\headfont #1 :\hfil}
+\newcommand*{\jyquote}[1]{“#1”}
+
+\chapter{詳解:とよぎぃ通信}
+
+とよぎぃ通信も第4号が発刊され，順調に歴史を積み重ねてきました．
+この同人誌のタイプセットには{\pLaTeX}が用いられていますが，
+具体的にどのような設定を行うことでこの同人誌を作り上げているのでしょうか．
+というわけで，本稿ではとよぎぃ通信のタイプセット手法を秘伝のタレとしてしまわないために
+とよぎぃ通信のタイプセット設定について詳細に解説を加えていきます．
+
+参考にするとよぎぃ通信のタイプセット設定は第3号で用いたもの\footnote{\url{https://github.com/tut-cc/c90}}です．
+
+\section{前提知識}
+\subsection{簡単なマクロの説明}
+\newcommand{\lcommand}{/コマンド/}
+\newcommand{\lCommand}[1]{/#1/}
+{
+\def\command{/コマンド/}
+\def\Command#1{/#1/}
+
+これから紹介するとよぎぃ通信のタイプセットには
+{\TeX}および{\LaTeX}におけるマクロについての知識が必要です．
+そのため，まずは軽くですがマクロについての説明を行います．
+
+{\TeX}におけるマクロは次の構文で定義します\footnote{正確に言えば{\TeX}のcontrol sequenceです}．
+\begin{verbatim}
+\def\command{/コマンド/}
+\end{verbatim}
+
+これで\verb|\command|というマクロが定義されました．
+このように{\TeX}におけるマクロは\verb|\def\マクロ名{\置換文字列}|の形で定義されます．
+定義したマクロを呼び出すことでマクロが実行され，置換処理が実行されます．
+マクロを呼び出すには\verb|\マクロ名|の形で呼び出すマクロを指定します．
+実際に定義した\verb|command|マクロを\verb|\command{}|として呼び出してみると\texttt{\command{}}という出力が得られます．
+これが{\TeX}で定義される最も基本的なマクロです．
+
+次に，引数を取る{\TeX}のマクロ\verb|\Command|を定義します．
+引数を取ることでマクロが置換文字列の内容を自由に変更することができます．
+\begin{verbatim}
+\def\Command#1{/#1/}
+\end{verbatim}
+先ほどのマクロと異なり，マクロ名の後ろに\verb|#1|という記述が追加されています．
+これは，マクロが取る引数を示しており，マクロの置換文字列内部では\verb|#1|という名前で与えられた引数を参照することができます．
+呼び出すときには引数を指定して呼び出さなければなりません．
+定義した\texttt{Command}マクロを\verb|\Command{コマンド呼び出し}|として呼び出してみると\texttt{\Command{コマンド呼び出し}}という出力が得られます．
+これで，引数を取る{\TeX}マクロを定義することができました．
+
+{\LaTeX}では{\TeX}とは異なる形でマクロを定義することができます\footnote{これも正確に言えば{\LaTeX}のUser-defined commandです}．
+\verb|\command|と同様のマクロを{\LaTeX}における記法を用いて定義してみます．
+\begin{verbatim}
+\newcommand{\lcommand}{/コマンド/}
+\end{verbatim}
+}
+呼び出し方は{\TeX}のマクロと何ら変わりません．
+呼び出してみると\texttt{\lcommand{}}という出力が得られます．
+同じように\verb|Command|と同様のマクロを定義してみます．
+\begin{verbatim}
+\newcommand{\lCommand}[1]{/#1/}
+\end{verbatim}
+そして\verb|\lCommand{コマンド呼び出し}|とすると得られる
+出力は\texttt{\lCommand{コマンド呼び出し}}となります．
+
+このようにして{\TeX}や{\LaTeX}で動作するマクロを定義できました．
+より詳しいマクロの定義は他に譲りますが，{\TeX}あるいは{\LaTeX}では
+このようなマクロを組み合わせてプログラミングを行うことで様々な組版結果を実現している
+ということを頭に置いておいてください．
+
+\subsection{クラスファイルとプリアンブル}
+
+とよぎぃ通信は日本語文書なのでタイプセットには{\LaTeX}の日本語対応拡張である{\pLaTeX}を用いています．
+{\pLaTeX}でのタイプセットに欠かせないものといえば，クラスファイル(\texttt{*.cls})とパッケージファイル(\texttt{*.sty})です．
+一般に，クラスファイルでレイアウトを定義をして，足りない部分をパッケージファイルで補うという形がとられます．
+パッケージファイルはスタイルファイルとも呼ばれることがありますが，ここではややこしいのでパッケージファイルで統一します．
+
+実際にとよぎぃ通信で行ったタイプセットの設定を見ていきます．
+とよぎぃ通信は同人誌のため，\texttt{jsclasses}に含まれる
+書籍用クラスファイル\texttt{jsbook}をタイプセットに用います．
+クラスファイルを読み込むときにはオプションを設定することができます．
+このオプションによって，クラスファイルに定義された複数のレイアウトのうちの一つを選び出すことができます．
+第3号を発行する際には次のようなオプションを指定しました．
+\begin{lstlisting}[caption=クラスファイルの指定,label=lis:class,language=tex]
+\documentclass[b5paper, 11pt]{jsbook}
+\end{lstlisting}
+それぞれのオプションによって紙面サイズやフォントサイズなどが指定されています．
+ここでは紙面サイズをB5(JIS)に，欧文のフォントサイズを11ptに指定しています
+\footnote{ここでいうptはWordなどが採用する一般的なptと異なります．
+Wordなどが採用するptは$1\mathrm{pt} = 1 / 72\mathrm{inch}$ですが，
+{\TeX}では$1\mathrm{pt} = 1 / 72.27\mathrm{inch}$となります．
+俗にこれは{\TeX}ポイントなどとも呼ばれます．}．
+欧文のフォントサイズが11ptのため、和文のフォントサイズはそれよりやや小さい$11 \times 0.9246 \simeq 10.1726$ptになります
+\footnote{正確には和文フォントの幅が10.1726ptとなり，和文フォントの高さはこれよりもやや小さな値となります．
+これはフォントメトリックと呼ばれるフォントの高さと幅を決める仕様で指定されています．}．
+
+クラスファイルの読み込みから文書の開始までに読み込んだクラスファイルに対する修正や
+文書作成のためにパッケージファイルを読みこんだり，マクロを記述します．
+これをプリアンブルと言います．
+\reflisting{lis:preamble}に示すプリアンブルが第3号のタイプセット時に用いられたものです．
+\begin{lstlisting}[caption=プリアンブル,label=lis:preamble,language=tex]
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{comment}
+\usepackage{url}
+\usepackage{subfigure}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{toyogy}
+\end{lstlisting}
+
+中には\verb|\usepackage|の宣言だけが行われているものの実際に使用していないパッケージも
+ありますが，プリアンブルではこれだけのパッケージが読み込まれています．
+それぞれのパッケージファイルについて詳しく解説することは難しいですが，いくつかのパッケージを紹介します．
+まず，なんと言っても\verb|listings|パッケージの存在を抜きにして語ることはできません．
+これは，{\TeX}文書中にソースコードをシンタックスハイライト付きで挿入することを可能にするパッケージです．
+このパッケージのおかげでとよぎぃ通信にソースコードをわかりやすく載せることができていると言っても過言ではありません．
+さて，もうひとつは\verb|toyogy|パッケージです．
+この\verb|toyogy|パッケージはとよぎぃ通信のタイプセットを行うために用いる専用のパッケージです．
+つまり，このパッケージを紐解くことでようやくとよぎぃ通信を\textbf{詳解}していると言えます．
+というわけで，とよぎぃ通信の生命線とも言える\verb|toyogy|パッケージ，そしてそれを構成する\verb|toyogy.sty|を実際に読み解いていきます．
+
+\section{toyogy.styを読み解く}
+
+とよぎぃ通信における設定の核を為すのが\texttt{toyogy.sty}です．
+このパッケージファイルにはとよぎぃ通信を刊行するときに必要となる様々な設定が書き込まれています．
+しかし，このパッケージファイルはパッチワークで作成されているために{\TeX}の機能の奥まで潜ったものから，ある既存パッケージに対しての設定を記述したものまで千差万別な内容が現れます．
+このパッケージファイルを設定を作用させる対象ごとに切り分けて読んでいきます．
+
+\subsection{ページレイアウトの調節}
+
+本を作成する上で基本となるのが，用紙のどの部分にどの要素を割り当てて使うかということです．
+ある本のページを構成する要素として次のようなものがあります．
+
+\begin{itemize}
+	\item 本文
+	\item ページ番号
+	\item 脚注
+	\item 柱
+\end{itemize}
+
+これらの要素は過不足なく本の1ページ内に収まらなければなりません．
+もし仮に設定を間違えてページ番号がページ内から抜け落ちてしまえば，読者は自分が何ページ目を読んでいるか把握することができませんし，編集する側もどのページを編集したのかわからなくなってしまいます．
+同じように，本文が掲載される領域を非常に小さく取ってしまったりすると，ページ量だけが増えページには文章が全く詰まっていない本が生み出されることになります．
+このような事態を防ぐために，クラスファイルがきちんとページ内に必要な要素が収まるように予めページレイアウトを設計しています．
+
+しかし，標準の設定ではいくつか物足りないというようなことが時折起こります．
+例を挙げれば，ページの余白が大きすぎる，1行の文字数が少し多すぎる，あるいは，行間を少し広げたいといったものです．
+これらの希望を満たすには，クラスファイルを読み込んだ後に各々が所望の出力になるように調節しなければなりません．
+とよぎぃ通信の場合も\reflisting{list:layout}に示す通り，
+クラスファイルの標準の設定からほんの少しだけページレイアウトを調節しています．
+まずは，これらの設定から読み解いていきます．
+% ただし,この修正はあまり褒められたものではありません．
+% というのもこの修正を理解するには{\pLaTeX}のページレイアウト手法についての理解が必要だからです
+% \footnote{大抵の場合では\texttt{geometry}パッケージを用いてページレイアウトの修正が行われます．}．
+%\reflisting{list:layout}が実際に用いたページレイアウトの修正です．
+\begin{lstlisting}[caption = ページレイアウトの調節,label = list:layout,language = tex]
+\setlength{\textwidth}{155truemm}
+\setlength{\textheight}{230truemm}
+\setlength{\fullwidth}{\textwidth}
+\setlength{\oddsidemargin}{15truemm}
+\addtolength{\oddsidemargin}{-1.15truein}
+\setlength{\evensidemargin}{15truemm}
+\addtolength{\evensidemargin}{-1.15truein}
+\setlength{\topmargin}{30truemm}
+\addtolength{\topmargin}{-2.4truein}
+\addtolength{\footskip}{8truemm}
+\setstretch{1.25}
+\end{lstlisting}
+
+具体的にどのようにページレイアウトを調節しているかを読み解く前に，
+{\pLaTeX}がどのようにページレイアウトを行っているのかについて確認します．
+{\pLaTeX}では，四つの領域に分割してそれらを配置します．
+領域はそれぞれ\jyquote{ヘッダー}，\jyquote{フッター}，\jyquote{本文}，\jyquote{欄外}と呼ばれます
+\footnote{英語の場合はそれぞれ``header''， ``footer''， ``body''， ``margin note''}．
+\jyquote{本文}はその名の通り本文が挿入される領域です．
+\jyquote{ヘッダー}は日本語書籍の場合，\jyquote{柱}とも呼ばれます．
+ここに章番号や章タイトルを挿入して，現在のページがどの章に属しているかを明示します．
+\jyquote{フッター}にはノンブル，つまりページ番号が主に挿入されます．
+\jyquote{欄外}は普段あまり見ることはないかもしれませんが，文章の特定箇所に追加で説明を加えたい場合に\jyquote{本文}領域の欄外に文章を挿入するために使われます．
+それぞれの領域の配置は\jyquote{本文}を中心として，\jyquote{本文}上部に\jyquote{ヘッダー}，下部に\jyquote{フッター}，ページの小口側に\jyquote{欄外}が配置されることになります．
+これらの領域の幅や高さを変更することで調節を行うことができます．
+
+幅や高さを変更するためには\verb|\setlength|マクロを用います．
+\verb|\setlength|マクロは引数を2つ取る{\LaTeX}マクロで，
+第1引数で与えられたマクロに第2引数で与えられた値を代入します．
+第2引数はptやmmなどの大きさや長さについての単位を持った数値でなければなりません．
+同様のマクロに\verb|\addtolength|マクロがあります．
+\verb|\addtolength|マクロは\verb|\setlength|マクロと同様に引数を2つ取ります．
+第1引数で与えられたマクロに第2引数で与えられた値を加算します．
+第2引数の制約は\verb|\setlength|と同様です．
+
+\reflisting{list:layout}の1行目と2行目で\jyquote{本文}の大きさを調節しています．
+\begin{verbatim}
+\setlength{\textwidth}{155truemm}
+\setlength{\textheight}{230truemm}
+\end{verbatim}
+
+この設定から\jyquote{本文}の幅を155mmに，高さを230mmに設定していることが分かります．
+それぞれの単位に対して\texttt{true}がついているところがポイントです．
+\texttt{jsclasses}を用いてタイプセットを行うときは，はじめに欧文書体を10ptとしてタイプセットを行った後に
+オプションで指定されたフォントサイズとなるように拡大縮小を行います．
+\texttt{true}をつけることでこの拡大縮小の対象にならず，希望通りの長さを指定することができます．
+以降に登場する\texttt{true}+単位の形はすべて同じ意味を持っていると思ってください．
+
+\jyquote{本文}の大きさを決定したので，次はどこに配置するのかを決めなければなりません．
+まずは\jyquote{本文}の横座標がどこに来るかを決めます．これは\jyquote{本文}の左端からページ左端までのマージンがわかれば決められます．
+この左マージンは偶数ページであればノド，奇数ページであれば小口と呼ばれます．
+ノドは本文から見てページ綴じ側に存在するマージン，
+反対に小口は本文から見てページ左側に存在するマージンのことです．
+書籍ではページを開いた時にノド，小口のどちらにも適切なアキがあると本文が読みやすくなります．
+\jyquote{本文}の左マージンは1inch + \verb|\hoffset|という値に，
+奇数ページならば\verb|\oddsidemargin|を，
+偶数ページならば\verb|\evensidemargin|を加えた値になります．
+\reflisting{list:layout}の4行目から7行目で\jyquote{本文}の左マージンを調節しています．
+
+\begin{verbatim}
+\setlength{\oddsidemargin}{15truemm}
+\addtolength{\oddsidemargin}{-1.15truein}
+\setlength{\evensidemargin}{15truemm}
+\addtolength{\evensidemargin}{-1.15truein}
+\end{verbatim}
+
+この調節では奇数ページと偶数ページの左マージンがそれぞれ同一となるように設定しています．
+実際に左マージンがどれほど取られているのか計算してみます．
+\verb|\hoffset|は0ptに指定されているためこれは計算で無視できます．
+\verb|\oddsidemargin|は単位が混在していてわかりづらいために単位を換算して計算します．
+1 inchはおおよそ2.54cmとなることから\verb|\oddsidemargin|は計算すると-14.21mmとなります．
+あとはこの値に1 inchを加えれば左マージンが求まります．
+左マージンが求まれば\jyquote{本文}の幅と紙面サイズの幅から右マージンも計算することができます．
+奇数ページと偶数ページでノドと小口を計算したものが\tablename\,\ref{tbl:oddevenmargins}です．
+\begin{table}[!ht]
+	\centering
+	\caption{偶数/奇数ページのノドと小口}
+	\label{tbl:oddevenmargins}
+	\begin{tabular}{c|cc} \hline \hline
+		& ノド & 小口 \\ \hline
+		偶数ページ & 15.81mm & 11.19mm \\
+		奇数ページ & 11.19mm & 15.81mm \\ \hline
+	\end{tabular}
+\end{table} 
+
+というわけで，とよぎぃ通信では奇数ページと偶数ページでノドと小口が揃っていないということが分かります．
+ただ，4mmという小さな差異なのでそこまで気になるほどのものではないと言えそうです．
+それにしても微妙に揃っていないというのは数字で見るとちょっと気持ち悪いものです．
+
+横座標を決めたので，次は\jyquote{本文}の縦座標を決めます．
+\jyquote{本文}の縦座標は横座標よりもややこしい計算が必要になります．
+なぜならば，\jyquote{本文}の上側には\jyquote{ヘッダー}が置かれることが決まっているからです．
+
+\jyquote{ヘッダー}の上端はページ上端から1inch $+$ \verb|\voffset|だけ下にずらしたところに配置されます．
+また，この\jyquote{ヘッダー}の高さは\verb|\headheight|だけあります．
+そして，\jyquote{ヘッダー}下端から\jyquote{本文}上端までのマージンが\verb|\topmargin|で指定されます．
+まとめると，ページ上端から\jyquote{本文}までのマージンは1inch $+$ \verb|\voffset| $+$ \verb|\headsep| $+$ \verb|\headheight| $+$ \verb|\topmargin|ということになります．
+\reflisting{list:layout}の8，9行目で上マージンを調節しています．
+\begin{verbatim}
+\setlength{\topmargin}{30truemm}
+\addtolength{\topmargin}{-2.4truein}
+\end{verbatim}
+\verb|\topmargin|もまた単位が混在しているので換算して計算すると\,-30.96mmとなります．
+実際に\jyquote{本文}上部のマージンがどれほどあるのか，先ほどの式に当てはめて計算してみます. 
+\verb|jsbook|では\,\verb|\voffset|が0pt，\verb|\headsep|が6mm，\verb|\headheight|が20pt
+となっているのでこれもまた単位系を揃えて計算すればおおよそ7.47mmとなります．
+標準の設定ですとおおよそ36.6mm確保されていることになるため，
+\jyquote{本文}がかなり標準よりも上に寄っていることになります．
+実際に印刷された第3号を見てみると，結構ページギリギリまで上に寄せ上げていることがわかります．
+
+また，ここから\jyquote{本文}とページ下端の間のマージンも計算できます．
+ページサイズがB5(JIS)のため，縦の長さは257mmです．
+\jyquote{本文}の縦の長さが230mm，ページ上端と\jyquote{本文}のマージンがおおよそ7.47mmということから，
+\,$257 - 230 - 7.47 \simeq 19.53\mathrm{mm}$が\jyquote{本文}とページ下端の間に存在するマージンと求まります．
+
+ページレイアウトについて得られたことをまとめてみましょう．
+ページレイアウトを所望のものに近づけるために\jyquote{本文}の大きさと，
+本文の上側および左側のマージンを調節していました．
+\tablename\ref{tbl:toyogylayout}にそれぞれのマージンをまとめて示します．
+
+\begin{table}[!ht]
+	\centering
+	\caption{とよぎぃ通信のページレイアウト設計}
+	\label{tbl:toyogylayout}
+	\begin{tabular}{c|c|c} \hline \hline
+		& とよぎぃ通信 & \verb|jsbook|(11pt) \\ \hline
+		天 & 7.47mm & 37.3mm \\
+		地 & 19.53mm & 18.4mm \\
+		左マージン & 11.19mm & 19.6mm \\
+		右マージン & 15.81mm & 20.0mm \\ \hline
+	\end{tabular}
+\end{table}
+
+こうして見れば，\verb|jsbook|の標準に比べて\jyquote{本文}の上下左右のマージンがかなり狭くなっています．
+その結果\jyquote{本文}を通常設定よりだいぶ大きく取ることができています．
+第3号は予想していたページ量を上回りかけたために，対策として取られた苦肉の策が\jyquote{本文}の拡大ということです．
+
+また，\jyquote{本文}以外の要素も調節しています．
+\jyquote{本文}下部の余白には\jyquote{フッター}が挿入されます．
+この\jyquote{フッター}上端と\jyquote{本文}下端の間のマージンもまた調節していきます．
+\jyquote{本文}と\jyquote{フッター}の間のマージンの調節にはふたつのマクロが関わってきます．
+ひとつは\verb|\footskip|マクロで，\jyquote{本文}下端と\jyquote{フッター}下端の間の幅を指定するものです．
+もうひとつは，\verb|\footheight|マクロで，\jyquote{フッター}の高さを指定します．
+これらを組み合わせると\jyquote{フッター}上端と\jyquote{本文}下端のマージンが計算できます．
+\verb|\footskip| $-$ \verb|\footheight|がその計算式です．
+
+\texttt{jsbook}標準の設定では\verb|\footskip|は0mmに指定されているため
+\jyquote{フッター}の下端と\jyquote{本文}の下端が揃っています．
+つまり\jyquote{フッター}の内容が\jyquote{本文}に食いこんでしまいます．
+この設定でも問題がないのは，\texttt{jsbook}がノンブルを\jyquote{フッター}でなく\jyquote{ヘッダー}に出力するため
+\jyquote{フッター}を気にする必要がないからです．
+一方，とよぎぃ通信では\jyquote{フッター}にノンブルを出力するためこのままの設定だと不都合が生じます．
+そのために\reflisting{list:layout}の10行目で\verb|\footskip|を書き換えています．
+\begin{verbatim}
+\addtolength{\footskip}{8truemm}
+\end{verbatim}
+
+この設定で，\jyquote{フッター}の下端が\jyquote{本文}の下端から8mm下側に出力されることになります．
+これで，ノンブルを\jyquote{フッター}に出力しても不都合が生じなくなりました．
+
+\jyquote{本文}と同じように\jyquote{ヘッダー}や\jyquote{フッター}の幅を設定します．
+これには，\texttt{jsclasses}で導入されている\verb|\fullwidth|マクロを用います．
+このマクロが\jyquote{ヘッダー}や\jyquote{フッター}の幅を決定します．
+標準では\texttt{jsclasses}読み込み時に指定されたオプションに従って幅を計算しており，
+\texttt{jsbook}ではその値は紙面サイズ\verb|\paperwidth|から36mmを引いた値となります．
+\reflisting{list:layout}の3行目がとよぎぃ通信における\verb|\fullwidth|の設定です．
+\begin{verbatim}
+\setlength{\fullwidth}{\textwidth}
+\end{verbatim}
+
+ここでは\jyquote{ヘッダー}と\jyquote{フッター}の幅を\jyquote{本文}の幅と同じにしています．
+これでようやくとよぎぃ通信のページレイアウトが完成しました．
+
+\subsection{\jyquote{本文}内部の設定}
+
+\jyquote{本文}に文章を挿入するときの設定を更にいくつか加えます． 
+\begin{lstlisting}[caption = \jyquote{本文}内文章の設定, label = list:body, language = tex]
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\@makechapterhead}{\vspace*{2\Cvs}}{}{}{}
+\makeatother
+\setstretch{1.25}
+\end{lstlisting}
+
+\reflisting{list:body}内の\verb|\makeatletter|と\verb|\makeatother|は，それらのマクロで囲まれた範囲内で\texttt{@}をテキストとして扱えるようにします\footnote{詳細は{\TeX}のカテゴリーコードで調べてみてください．}．
+\verb|\patchcmd|は\verb|etoolbox|によって定義されているマクロです．
+ここでは\verb|\@makechapterhead|内に含まれる\verb|\vspace*{2\Cvs}|を空文字列へと変換しています．
+この\verb|\vspace|は章タイトルを表示した時に章タイトルの上部に挿入されるマージンを指定しています．
+\verb|\patchcmd|によって\texttt{jsbook}標準では章タイトル上部に挿入されるマージンを消しています．
+
+次に登場する\verb|\setstretch|マクロは\texttt{setspace}パッケージによって定義されているマクロです．
+これは行間の幅を指定された数値だけ拡大します．
+とよぎぃ通信では行間の幅を\texttt{jsbook}標準の1.25倍の設定になっています．
+% あとでこのマクロの効果を確認すること
+
+\subsection{ノンブルと柱のレイアウト}
+
+書籍を作成する上で，ノンブルや柱は外せません．
+ノンブルや柱があることで読者は今見ているページが全体の何ページ目で，どの章に属しているものかを瞬時に把握することができます．
+{\pLaTeX}ではノンブルや柱のレイアウトを制御するためにページスタイルというものを使います．
+ページスタイルには様々なものがありますが，とよぎぃ通信では\verb|plain|のページスタイルを使っています．
+\texttt{plain}スタイルは\texttt{jsbook}では\jyquote{ヘッダー}にノンブルや柱が表示されることになります．
+一方で，とよぎぃ通信では\jyquote{フッター}にノンブルのみを表示します．
+\reflisting{list:footer}に示すマクロでそれらの書き換えを行っています．
+
+\begin{lstlisting}[caption = ノンブルと柱のレイアウト, label = list:footer, language=tex]
+\makeatletter
+\def\ps@plainfoot{%
+\let\@mkboth\@gobbletwo
+\let\@oddhead\@empty
+\def\@oddfoot{\normalfont\hfil-- \thepage\ --\hfil}%
+\let\@evenhead\@empty
+\let\@evenfoot\@oddfoot}
+\let\ps@plain\ps@plainfoot
+\makeatother
+\pagestyle{plain}
+\end{lstlisting}
+
+\reflisting{list:footer}の1行目から9行目が\jyquote{フッター}にノンブルを表示するための設定です．
+1行目と9行目の\verb|\makeatletter|，\verb|\makeatother|は，\texttt{@}を使えるようにする設定なので読み飛ばしてしまいます．
+2行目から7行目にページスタイルの設定をしています．
+\verb|\ps@plainfoot|は\jyquote{フッター}のみに出力がなされるシンプルなページスタイルの設定です．
+とよぎぃ通信における設定で\verb|jsbook|標準から変更されているものは5行目の\verb|\def\@oddfoot{\normalfont\hfil-- \thepage\ --\hfil}|のみです．
+これは，ページ番号を表示するときにページ番号の左右にエンダッシュ(--)を追加しています．
+\verb|\thepage|がページ番号を管理しているカウンターです．
+% ページ番号を出力するフォントの大きさは\verb|\normalfont|と指定されています．
+% \verb|\hfil|は横方向の大きさを持った詰物です．
+
+変更を加えていない部分についても簡単に説明を加えます．
+\verb|\@mkboth|はクラスファイル読み込み時に\texttt{twoside}が指定されていた時に，左ページと右ページで\jyquote{ヘッダー}に出力する内容を変更するときには\verb|\markboth|が，
+そうでない時には\verb|\@gobbletwo|が設定されます．
+\verb|\@gobbletwo|が設定されているときは\verb|\@mkboth|は意味を持ちません．\\
+\verb|\@oddhead|と\verb|\@evenhead|にはそれぞれ\verb|\@empty|が設定されています．
+これらは奇数ページと偶数ページで\jyquote{ヘッダー}に何を出力するか決定しますが，\verb|\@empty|が設定されているため何も出力しません．\\
+\verb|\@evenfoot|は\verb|\@oddfoot|と同じになるように出力されています．
+このことから奇数ページと偶数ページでは\jyquote{フッター}に同じ出力がなされます．
+
+また，\reflisting{list:footer}の10行目で\verb|plain|のページスタイルを\verb|\ps@plainfoot|に設定しています．
+ここで\verb|plain|のページスタイルに\verb|\ps@plainfoot|を設定しているため，
+\jyquote{フッター}にノンブルが表示されます．
+
+\subsection{図や表の挿入についての設定}
+
+{\pLaTeX}では図や表はフロートと呼ばれる領域を\jyquote{本文}内部に作成した上で，フロート内に配置されます．
+\reflisting{list:float}ではフロートが挿入された時の見た目に関する設定を行っています．
+\begin{lstlisting}[caption = フロートついての設定, label = list:float, language = tex]
+\setlength{\intextsep}{10.5pt}
+\setlength{\textfloatsep}{10.5pt}
+
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\tablename}{Table }
+
+\makeatletter
+\setlength{\abovecaptionskip}{0pt}
+\long\def\@makecaption#1#2{%
+\vskip\abovecaptionskip
+\iftdir\sbox\@tempboxa{#1\hskip1zw#2}%
+\else\sbox\@tempboxa{#1 #2}%
+\fi
+\ifdim \wd\@tempboxa >\hsize
+\iftdir #1\hskip1zw#2\relax\par
+\else #1 #2\relax\par\fi
+\else
+\global \@minipagefalse
+\hbox to\hsize{\hfil\box\@tempboxa\hfil}%
+\fi
+\vskip\belowcaptionskip}
+\makeatother
+\end{lstlisting}
+
+
+\reflisting{list:float}の1行目と2行目にはフロートの上下に入るマージンの大きさを指定しています．
+\begin{verbatim}
+\setlength{\intextsep}{10.5pt}
+\setlength{\textfloatsep}{10.5pt}
+\end{verbatim}
+
+\verb|\textfloatsep|は本文領域の下端にフロートを挿入した時に，
+本文とフロートの間に縦方向に挿入されるマージンを指定します．
+マージンはフロートの上側だけに挿入されます．
+\verb|\intextsep|は本文領域内にフロートを挿入した時に，
+本文とフロートの間に縦方向に挿入されるマージンを指定します．
+図や表を挿入するときのオプションに\texttt{[h]}を指定した時に
+このマージンは，フロートの上下に挿入されます．
+とよぎぃ通信では，これらのマージンを\texttt{jsbook}の標準のマージンより狭くしています
+
+\reflisting{list:float}の4行目と5行目はフロートにキャプションを加える時の設定をします．
+\begin{verbatim}
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\tablename}{Table }
+\end{verbatim}
+
+\verb|\figurename|は図環境にキャプションを付け加えるときに，キャプション番号の前に挿入される単語を指定します．
+同様に\verb|\tablename|は表環境にキャプションを付け加えるときに，キャプション番号の前に挿入される単語を指定します．
+とよぎぃ通信では図環境と表環境にキャプションを付け加えるときに，表示される単語を英語に変更しています．
+
+\verb|\makeatletter|\,$\sim$\,\verb|\makeatother|で囲まれた範囲のマクロについて見ていきます
+．
+重要な部分は\verb|\long\def\@makecaption|によって定義される\verb|@makecaption|マクロです．
+マクロ定義のプレフィックスとして指定されている\verb|\long|はマクロによって展開される文字列内に改行や段落が含まれることを意味しています．
+少しわかりづらい部分があるため，一つ一つほぐしながら見ていきます．
+まず，はじめに\verb|@makecaption|は引数を2つ取ります．
+\verb|#1|はキャプションの番号が，\verb|#2|にはキャプションとして表示するテキストが入ります．
+\verb|\vskip\abovecaptionskip|は{\TeX}のプリミティブマクロ\verb|\vskip|を呼び出しています
+% \footnote{\url{https://www.tug.org/utilities/plain/cseq.html#vskip-rp}}
+これは引数を一つ取るプリミティブマクロで，垂直方向にマージンを挿入します．
+ところで\verb|\abovecaptionskip|は\verb|@makecaption|の定義の直前に\verb|\setlength|によってその大きさを0ptにされています．
+このことからフロートに表題を加える際に表題の上部にはマージンを追加しないことを意味します．
+
+次のマクロでボックスを作成します.
+\begin{verbatim}
+\iftdir\sbox\@tempboxa{#1\hskip1zw#2}%
+\else\sbox\@tempboxa{#1 #2}%
+\fi
+\end{verbatim}%
+\verb|\iftdir|は{p\TeX}の拡張プリミティブマクロで，現在の文字組の方向が縦向きである時に真を取ります．
+% \footnote{\url{https://osdn.net/projects/eptex/docs/tc16ptex/ja/1/tc16ptex.pdf}}
+% \footnote{\url{http://d.hatena.ne.jp/zrbabbler/20160612/1465700860}}
+とよぎぃ通信では全ページ横組となっているため，この\verb|\iftdir|で分岐することはありません．
+よって実行されるマクロは\verb|\sbox\@tempboxa{#1 #2}|となります．
+これは{\LaTeX}拡張のマクロの一つで，\verb|\sbox{cmd}{text}|という形式になっています．
+このマクロでは，\verb|{text}|が入る大きさのボックスを作成して
+テキストを実際に流しこむ代わりに，\verb|{cmd}|で指定されたマクロにボックスの情報を保存します．
+ここでは\verb|@tempboxa|というマクロにキャプションを作るときに指定されたテキストが収まるようなボックスの情報が保存されます.\\
+作成された\verb|@tempboxa|を使用するのが，次の\verb|\ifdim|から始まるマクロです．
+% この部分の解説は次の2つを詳しく読んだほうが良い
+% ftp://ftp.ccu.edu.tw/pub/tex/language/japanese/ptex-base/ptexdoc.tex
+% file:///home/um-akahana/Downloads/doronawa0.4.pdf
+\begin{verbatim}
+\ifdim \wd\@tempboxa >\hsize
+\iftdir #1\hskip1zw#2\relax\par
+\else #1 #2\relax\par\fi
+\else
+\global \@minipagefalse
+\hbox to\hsize{\hfil\box\@tempboxa\hfil}%
+\fi
+\end{verbatim}
+\verb|\ifdim|は{\TeX}のプリミティブマクロで，mmやptなどの単位を持つ2つの値を比較演算子で比較し，真偽値を返します．
+この\verb|\ifdim|ではキャプションが入るボックスの長さが，組方向の行の長さを超えていないかを確認しています．
+\verb|\wd|は{\TeX}のプリミティブマクロで，引数として与えられたボックスの横幅を取得します．
+% hsizeは水平方向の長さの可能性がある.\TeXの標準は左から右に字が送られていって行を形成し
+% 行は上から下に送られていくことでページを作成する
+比較対象の\verb|\hsize|は行の長さを表すプリミティブマクロです．
+つまり，挿入するキャプションが行の長さに収まっているか否かを判定しています．
+
+キャプションが行の長さを超えるときは，キャプションを左揃えで表示します．
+\verb|\relax|は何もしない{\TeX}のプリミティブマクロ，\verb|\par|は改段落を行う{\TeX}のプリミティブマクロです．
+一方，キャプションが行の長さを超えない場合は中揃えをして出力します．
+\verb|\hbox|は{\TeX}のプリミティブマクロで水平方向のボックスを作成します．
+ここでは引数として\verb|to\hsize|を与えているため行の長さのボックスが作成されます．
+\verb|\hbox|内にキャプションを閉じ込めてしまうことで，中揃えが実現できます．
+% hfilは無限に伸びるスペースを提供する
+% 両端にhfilを突っ込むことによって,中揃えが実現できている.謎
+
+
+\subsection{数式についての設定}
+
+% 長くなった\verb|toyogy.sty|の解読ですが,これが最後になります．
+\reflisting{list:eq}では，数式というよりも数式に付随する式番号に関する設定をしています．
+\begin{lstlisting}[caption = 数式についての設定, label = list:eq, language = tex]
+\makeatletter
+\@addtoreset{equation}{section}
+\def\theequation{\thesection.\arabic{equation}}
+\makeatother
+\end{lstlisting}
+
+l行目と4行目は，定型句は3回目の登場になるので飛ばしてしまいましょう．
+2行目はカウンタについての設定です．
+\verb|\@addtoreset|はあるカウンタを他のカウンタに結びつける働きを持つマクロです．
+具体的には，第1引数に与えられたカウンタを第2引数に与えられたカウンタに結びつけます．
+カウンタを結びつけるを言い換えると，カウンタがリセットされるタイミングを同じにするということになります．
+この設定では，\verb|equation|カウンタを\verb|section|カウンタに結びつけるため，節が切り替わるごとに式番号がリセットされます．
+3行目はカウンタの数字を出力する際の設定です．
+\verb|\theequation|は式番号を挿入するときに呼び出されます．
+ここでは，ある式の式番号を\verb|[節カウンタ].[式カウンタ]|の形式で出力するよう定義しています．
+\verb|\arabic{equation}|は\verb|equation|カウンタの数値表現をアラビア数字とする設定です．
+\verb|\thesection|にはこのように数値表現を表示する設定が書かれていませんが，
+これは既に定義されている\verb|\thesection|マクロによって出力が決定されているためです．
+
+
+\section{おわりに}
+
+「とよぎぃ通信の中でとよぎぃ通信のタイプセットやレイアウトについて解説したら面白かろう．」という思いつきひとつで原稿を書き上げてしまいました．
+この原稿を書き始めるまで{\TeX}や{\LaTeX}を使ったことがあるもののマクロ等々に全く詳しくなかったにもかかわらず，書き始めてしまったのが運の尽きというところでだいぶ苦労する羽目になりました．
+ある程度まで解説したつもりですが，これでもまだ微妙に解説しきれていないという感じもあり{\TeX}の世界の広さを痛感しています．
+
+さすがにこの秘伝のタレを保守し続けるのは厳しいので，今号ではレイアウトの設定を変更することにしました．
+次の号では，また同じようなとよぎぃ通信のタイプセットの解説を書くかも知れません．
+
+\section*{参考文献}
+
+原稿執筆にあたって参考にしたサイトや文献をいくつか紹介します．
+
+\begin{itemize}
+	\item ［改訂第6版］ {\LaTeXe} 美文書作成入門
+	\item TeX Wiki (\url{https://texwiki.texjp.org/})
+	\item TeX Primitive Control Sequences(\url{https://www.tug.org/utilities/plain/cseq.html})
+	\item {\LaTeXe}まくろの八衢 (\url{http://xymtex.my.coocan.jp/fujitas2/yatimata2/v200/yatimata2.pdf})
+	\item zr\_tex8r - Qiita (\url{http://qiita.com/zr_tex8r})
+\end{itemize}
