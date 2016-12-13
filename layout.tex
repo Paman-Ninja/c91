@@ -5,13 +5,12 @@
 \usepackage{setspace}
 \usepackage{url}
 \usepackage{geometry}
+\usepackage{amsmath, amssymb}
 \usepackage[uplatex, jis2004]{otf}
 \geometry{dvipdfm, truedimen, b5j, left=18truemm, right=18truemm,
 top=30truemm, bottom=30truemm,
 marginparwidth=0pt,
 }
-% \setlength{\marginparwidth}{0mm}
-% \usepackage{toyogy}
 
 \renewcommand{\lstlistingname}{List}
 \lstset{language=c,
@@ -37,15 +36,34 @@ marginparwidth=0pt,
 \setcounter{tocdepth}{2}
 \setcounter{secnumdepth}{3}
 
+\makeatletter
+\newcommand{\chapterauthor}[1]{%
+  {\parindent0pt\vspace*{-35pt}%
+  \linespread{1.1}\hbox to\hsize{\hfil\large#1}%
+  \par\nobreak\vspace*{35pt}}
+  \@afterheading%
+}
+
+\makeatother
+
+\newcommand*{\reflisting}[1]{\lstlistingname\,\ref{#1}}
+\renewcommand*\descriptionlabel[1]{\normalfont\headfont #1 :\hfil}
+\newcommand*{\jyquote}[1]{“#1”}
+
 \begin{document}
 
 \frontmatter
+\input{introduction}
 \tableofcontents
 
 \mainmatter
 \setcounter{page}{1}
 % \pagestyle{plain}
 
+\input{fourier_and_sampling_theorem}
 \input{explain_toyogy}
+
+\backmatter
+\input{colophon}
 
 \end{document}
