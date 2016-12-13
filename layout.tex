@@ -5,13 +5,12 @@
 \usepackage{setspace}
 \usepackage{url}
 \usepackage{geometry}
+\usepackage{amsmath, amssymb}
 \usepackage[uplatex, jis2004]{otf}
 \geometry{dvipdfm, truedimen, b5j, left=18truemm, right=18truemm,
 top=30truemm, bottom=30truemm,
 marginparwidth=0pt,
 }
-% \setlength{\marginparwidth}{0mm}
-% \usepackage{toyogy}
 
 \renewcommand{\lstlistingname}{List}
 \lstset{language=c,
@@ -37,15 +36,66 @@ marginparwidth=0pt,
 \setcounter{tocdepth}{2}
 \setcounter{secnumdepth}{3}
 
+\makeatletter
+
+\def\@schapter#1{%
+	\if@mainmatter
+		\stepcounter{chapter}%
+		\setcounter{chapter}{1}%
+		\addcontentsline{toc}{chapter}{\bfseries\large#1}%
+	\fi
+	\chaptermark{#1}%
+	\if@twocolumn
+		\@topnewpage[\@makeschapterhead{#1}]%
+	\else
+		\@makeschapterhead{#1}\@afterheading
+	\fi
+	\thispagestyle{myheadings}
+	}
+
+\newcommand{\chapterauthor}[1]{%
+	\if@mainmatter
+		\addtocontents{toc}{%
+			\vskip-1mm%
+			\hbox to\z@{--- \ttfamily#1\hss}%
+			\par\nobreak}
+	\fi
+	{\parindent0pt\vspace*{-25pt}%
+	\linespread{1.1}\hbox to\hsize{\hfil\ttfamily\large#1}%
+	\par\nobreak\vspace*{35pt}}
+	\@afterheading%
+}
+
+\def\ps@myheadings{%
+	\let\@mkboth\@gobbletwo
+	\let\@evenhead\@empty
+	\let\@oddhead\@empty
+	\def\@evenfoot{%
+		\hbox to \fullwidth{\thepage}\hss}%
+	\def\@oddfoot{%
+		\hbox to \fullwidth{\hfil\thepage}\hss}%
+}
+\makeatother
+
+\newcommand*{\reflisting}[1]{\lstlistingname\,\ref{#1}}
+\renewcommand*\descriptionlabel[1]{\normalfont\headfont #1 :\hfil}
+\newcommand*{\jyquote}[1]{“#1”}
+
 \begin{document}
 
 \frontmatter
+\pagestyle{plain}
+\input{introduction}
 \tableofcontents
 
 \mainmatter
 \setcounter{page}{1}
-% \pagestyle{plain}
+\pagestyle{myheadings}
 
+\input{fourier_and_sampling_theorem}
 \input{explain_toyogy}
+
+\backmatter
+\input{colophon}
 
 \end{document}
