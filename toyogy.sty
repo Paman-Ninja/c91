@@ -11,6 +11,7 @@
 	top=30truemm, % 天を30mmに設定
 	bottom=30truemm,% 地を30mmに設定
 	marginparwidth=0pt,% 傍注の大きさを0ptに設定
+	footskip=5truemm,
 }
 
 \setlength{\fullwidth}{\textwidth}
@@ -42,8 +43,6 @@
 % 章立てで許容する範囲をsubsubsectionまでに制限
 \setcounter{secnumdepth}{3}
 
-\makeatletter
-
 % 星付きのchapterの定義の書き換え
 \def\@schapter#1{%
 	\if@mainmatter
@@ -62,7 +61,7 @@
 	\thispagestyle{myheadings}
 	}
 
-% 章ごとに著者名を記入するマクロ
+% 章ごとに著者名を設定できるようにする
 \newcommand{\chapterauthor}[1]{%
 	\if@mainmatter
 		% 目次にも著者名を入れる
@@ -88,7 +87,6 @@
 	\def\@oddfoot{%
 		\hbox to \fullwidth{\hfil\thepage}\hss}%
 }
-\makeatother
 
 % description環境のitem表示の後ろに":"を付与する.完全に趣味
 \renewcommand*\descriptionlabel[1]{\normalfont\headfont #1 :\hfil}
