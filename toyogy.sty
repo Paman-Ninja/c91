@@ -2,7 +2,22 @@
 \RequirePackage{geometry}
 \RequirePackage{listings}
 
-% ページレイアウトの設定
+% ページレイアウトをオプションで分岐するように変更
+\newif\if@manuscript\@manuscriptfalse
+\DeclareOption{manuscript}{
+	\@manuscripttrue
+}
+\newif\if@draft\@draftfalse
+\DeclareOption{draft}{
+	\@drafttrue
+}
+% デフォルトはB5(JIS)とする
+\ExecuteOptions{draft}
+
+\ProcessOptions\relax
+
+\if@draft
+% 予稿作成時のページレイアウト
 \geometry{dvipdfm,% dviウェアとしてdvipdfm(x)を使う宣言
 	truedimen,% \magプリミティブの対象にしない(jsclassesを使うときには重要)
 	b5j,% 出力用紙サイズをB5(JIS)に設定
@@ -11,8 +26,24 @@
 	top=30truemm, % 天を30mmに設定
 	bottom=30truemm,% 地を30mmに設定
 	marginparwidth=0pt,% 傍注の大きさを0ptに設定
+	footskip=5truemm,% フッターの下端を5mm下にずらす
+}
+\fi
+
+\if@manuscript
+% 入稿時のページレイアウト
+% 原稿の上下左右に3mmのアキを追加する
+\geometry{dvipdfm,%
+	truedimen,%
+	papersize={188truemm,263truemm},% B5(JIS)の天地左右に3mmを追加
+	left=18truemm, % 
+	right=18truemm,% 
+	top=33truemm, % 
+	bottom=33truemm,% 
+	marginparwidth=0pt,% 
 	footskip=5truemm,
 }
+\fi
 
 \setlength{\fullwidth}{\textwidth}
 \setlength{\baselineskip}{1.75zw}
