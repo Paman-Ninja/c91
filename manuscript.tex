@@ -1,23 +1,29 @@
 %!TEX encoding = UTF-8 Unicode
-\documentclass[papersize, b5paper, tombo, 11pt, uplatex]{jsbook}
+\documentclass[12Q, uplatex]{jsbook}
 
 \usepackage[dvipdfmx]{graphicx}
-\usepackage{comment}
 \usepackage{url}
-\usepackage{subfigure}
-\usepackage{setspace}
-\usepackage{amsmath}
-\usepackage{multirow}
+\usepackage{amsmath, amssymb}
 \usepackage{listings}
-\usepackage{toyogy}
+\usepackage{geometry}
+\usepackage[uplatex, jis2004]{otf}
+\usepackage[manuscript]{toyogy}
 
 \begin{document}
-\setcounter{page}{1}
 
+\frontmatter
+\pagestyle{plain}
+\input{introduction}
 \tableofcontents
 
-\include{introduction}
-% \include{road_to_rust}
-\include{fourier_and_sampling_theorem}
+\mainmatter
+\setcounter{page}{1}
+\pagestyle{myheadings}
+
+\input{fourier_and_sampling_theorem}
+\input{explain_toyogy}
+
+\backmatter
+\input{colophon}
 
 \end{document}
