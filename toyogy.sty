@@ -1,98 +1,126 @@
-\setlength\intextsep{10.5pt}
-\setlength\textfloatsep{10.5pt}
-\setlength\abovecaptionskip{0pt}
+% 依存しているパッケージを宣言
+\RequirePackage{geometry}
+\RequirePackage{listings}
 
-\renewcommand{\lstlistingname}{List}
+% ページレイアウトをオプションで分岐するように変更
+\newif\if@manuscript\@manuscriptfalse
+\DeclareOption{manuscript}{
+	\@manuscripttrue
+}
+\newif\if@draft\@draftfalse
+\DeclareOption{draft}{
+	\@drafttrue
+}
+% デフォルトはB5(JIS)とする
+\ExecuteOptions{draft}
+
+\ProcessOptions\relax
+
+\if@draft
+% 予稿作成時のページレイアウト
+\geometry{dvipdfm,% dviウェアとしてdvipdfm(x)を使う宣言
+	truedimen,% \magプリミティブの対象にしない(jsclassesを使うときには重要)
+	b5j,% 出力用紙サイズをB5(JIS)に設定
+	left=15truemm, % 左マージンを15mmに設定
+	right=15truemm,% 右マージンを15mmに設定
+	top=30truemm, % 天を30mmに設定
+	bottom=30truemm,% 地を30mmに設定
+	marginparwidth=0pt,% 傍注の大きさを0ptに設定
+	footskip=5truemm,% フッターの下端を5mm下にずらす
+}
+\fi
+
+\if@manuscript
+% 入稿時のページレイアウト
+% 原稿の上下左右に3mmのアキを追加する
+\geometry{dvipdfm,%
+	truedimen,%
+	papersize={188truemm,263truemm},% B5(JIS)の天地左右に3mmを追加
+	left=18truemm, % 
+	right=18truemm,% 
+	top=33truemm, % 
+	bottom=33truemm,% 
+	marginparwidth=0pt,% 
+	footskip=5truemm,
+}
+\fi
+
+\setlength{\fullwidth}{\textwidth}
+\setlength{\baselineskip}{1.75zw}
+
+% Listings環境に関する設定
+\renewcommand{\lstlistingname}{List} % キャプションに表示される名前を変更
+\newcommand*{\reflisting}[1]{\lstlistingname~\ref{#1}} % Listing専用の\refを定義
 \lstset{language=c,
-	basicstyle=\ttfamily\scriptsize,
+	basicstyle=\ttfamily\small,
 	commentstyle=\textit,
 	classoffset=1,
 	keywordstyle=\bfseries,
-	frame=tRBl,
+	frame=tbrl,
+	frameround=tttt,
 	framesep=5pt,
 	showstringspaces=false,
 	numbers=left,
 	stepnumber=1,
-	numberstyle=\tiny,
-	tabsize=2
+	numberstyle=\scriptsize,
+	tabsize=2,
+	aboveskip=0.75zw,
+	belowskip=1.75zw
 }
 
-\pagestyle{plain}
 
-\makeatletter
-
-%\def\section{\@startsection {section}{1}{\z@}{0.1ex}{0.1ex}{\large}}
-
+% 目次に表示される章立てをsubsectionまでに制限
+\setcounter{tocdepth}{2}
+% 章立てで許容する範囲をsubsubsectionまでに制限
 \setcounter{secnumdepth}{3}
-\setcounter{tocdepth}{2}%
 
-\setlength{\textwidth}{155truemm}
-\setlength{\fullwidth}{\textwidth}
-%\setlength{\textwidth}{\fullwidth}
-\setlength{\oddsidemargin}{15truemm}
-\addtolength{\oddsidemargin}{-1.15truein}
-\setlength{\evensidemargin}{15truemm}
-\addtolength{\evensidemargin}{-1.15truein}
-\setlength{\topmargin}{30truemm}
-% \setlength{\textheight}{197truemm}
-\setlength{\textheight}{230truemm}
-\addtolength{\topmargin}{-2.4truein}
-\addtolength{\footskip}{8truemm}
+% 星付きのchapterの定義の書き換え
+\def\@schapter#1{%
+	\if@mainmatter
+		% 章が変わるごとにカウンタをリセットする
+		% これで各章の節が1.~で始まるようになる
+		\stepcounter{chapter}%
+		\setcounter{chapter}{1}%
+		\addcontentsline{toc}{chapter}{\bfseries\large#1}%
+	\fi
+	\chaptermark{#1}%
+	\if@twocolumn
+		\@topnewpage[\@makeschapterhead{#1}]%
+	\else
+		\@makeschapterhead{#1}\@afterheading
+	\fi
+	\thispagestyle{myheadings}
+	}
 
+% 章ごとに著者名を設定できるようにする
+\newcommand{\chapterauthor}[1]{%
+	\if@mainmatter
+		% 目次にも著者名を入れる
+		\addtocontents{toc}{%
+			\vskip-1mm%
+			\hbox to\z@{--- \ttfamily#1\hss}%
+			\par\nobreak}
+	\fi
+	{\parindent0pt\vspace*{-25pt}%
+	\linespread{1.1}\hbox to\hsize{\hfil\ttfamily\large#1}%
+	\par\nobreak\vspace*{35pt}}
+	\@afterheading%
+}
 
-%
-\makeatother
+% ページスタイルの修正.
+% myheadingsスタイルをフッターにノンブルを表示する形式に変更
+\def\ps@myheadings{%
+	\let\@mkboth\@gobbletwo
+	\let\@evenhead\@empty
+	\let\@oddhead\@empty
+	\def\@evenfoot{%
+		\hbox to \fullwidth{\thepage}\hss}%
+	\def\@oddfoot{%
+		\hbox to \fullwidth{\hfil\thepage}\hss}%
+}
 
-\usepackage{etoolbox}
-\makeatletter
-\patchcmd{\@makechapterhead}{\vspace*{2\Cvs}}{}{}{}
-\makeatother
+% description環境のitem表示の後ろに":"を付与する.完全に趣味
+\renewcommand*\descriptionlabel[1]{\normalfont\headfont #1 :\hfil}
 
-\makeatletter
-\def\ps@plainfoot{%
-\let\@mkboth\@gobbletwo
-\let\@oddhead\@empty
-\def\@oddfoot{\normalfont\hfil-- \thepage\ --\hfil}%
-\let\@evenhead\@empty
-\let\@evenfoot\@oddfoot}
-\let\ps@plain\ps@plainfoot
-\makeatother
-\pagestyle{plain}
-
-\makeatletter
-\long\def\@makecaption#1#2{%
-\vskip\abovecaptionskip
-\iftdir\sbox\@tempboxa{#1\hskip1zw#2}%
-\else\sbox\@tempboxa{#1 #2}%
-\fi
-\ifdim \wd\@tempboxa >\hsize
-\iftdir #1\hskip1zw#2\relax\par
-\else #1 #2\relax\par\fi
-\else
-\global \@minipagefalse
-\hbox to\hsize{\hfil\box\@tempboxa\hfil}%
-\fi
-\vskip\belowcaptionskip}
-\makeatother
-
-\makeatletter
-
-\@addtoreset{equation}{section}
-\def\theequation{\thesection.\arabic{equation}}
-\makeatother
-
-\makeatletter
-%\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
-%{0.1ex}%
-%{0.1ex}%
-%{\normalsize}}
-%
-%\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
-%{0.1ex}%
-%{0.1ex}%
-%{\normalsize}}
-\makeatother
-
-\renewcommand{\figurename}{Fig.}
-\renewcommand{\tablename}{Table }
-\setstretch{1.25}
+% 日本語引用符による引用を実現するマクロ
+\newcommand*{\jyquote}[1]{“#1”}
